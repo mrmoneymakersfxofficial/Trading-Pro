@@ -1,0 +1,99 @@
+// Trading Pro — SaaS Database Schema
+// Adaptado de Supabase/PostgreSQL a SQLite/Prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ─── USUARIOS ───────────────────────────────────────────────────
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  password      String?  // Hashed (bcrypt) — solo para credenciales email/pass
+  image         String?
+  role          String   @default("user") // "user" | "admin"
+  brokerId      String?  // ID de cuenta MT4/MT5
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  licenses      UserLicense[]
+
+  @@map("users")
+}
+
+// ─── LICENCIAS (Catálogo maestro) ───────────────────────────────
+model License {
+  id            String   @id @default(cuid())
+  key           String   @unique   // Clave de licencia única (UUID-style)
+  level         String   @default("standard") // "standard" | "pro"
+  durationMonths Int    // 1, 3, 6, 12...
+  status        String   @default("available") // "available" | "assigned" | "revoked" | "paused"
+  assignedToEmail String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userLicenses  UserLicense[]
+
+  @@map("licenses")
+}
+
+// ─── ASIGNACIÓN USUARIO ↔ LICENCIA ─────────────────────────────
+model UserLicense {
+  id            String   @id @default(cuid())
+  userId        String
+  licenseId     String
+  activatedAt   DateTime?
+  expiresAt     DateTime?
+  status        String   @default("pending") // "active" | "expired" | "pending" | "paused" | "revoked"
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  license       License  @relation(fields: [licenseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, licenseId])
+  @@map("user_licenses")
+}
+
+// ─── CUENTAS DE AUTH (NextAuth.js) ─────────────────────────────
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String  @id @default(cuid())
+  sessionToken String  @unique
+  userId       String
+  expires      DateTime
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
