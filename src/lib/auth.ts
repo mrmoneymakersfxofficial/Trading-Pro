@@ -1,18 +1,16 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import { db } from "@/lib/db";
+import { query, queryOne } from "@/lib/db-pg";
 import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   providers: [
-    // ─── Google OAuth ─────────────────────────────────────
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID ?? "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
 
-    // ─── Email / Password ─────────────────────────────────
     CredentialsProvider({
       name: "credentials",
       credentials: {
@@ -22,16 +20,14 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await db.user.findUnique({
-          where: { email: credentials.email },
-        });
+        const user = await queryOne(
+          "SELECT id, email, name, password, role, image FROM users WHERE email = $1",
+          [credentials.email]
+        );
 
         if (!user || !user.password) return null;
 
-        const isValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
+        const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) return null;
 
         return {
@@ -47,20 +43,16 @@ export const authOptions: NextAuthOptions = {
 
   callbacks: {
     async signIn({ user, account }) {
-      // Auto-sync: si entra por Google y no existe, crear en DB
       if (account?.provider === "google" && user.email) {
-        const existing = await db.user.findUnique({
-          where: { email: user.email },
-        });
+        const existing = await queryOne("SELECT id FROM users WHERE email = $1", [user.email]);
         if (!existing) {
-          await db.user.create({
-            data: {
-              email: user.email,
-              name: user.name ?? null,
-              image: user.image ?? null,
-              role: "user",
-            },
-          });
+          const id = `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+          const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map(e => e.trim());
+          const role = adminEmails.includes(user.email) ? "admin" : "user";
+          await query(
+            `INSERT INTO users (id, email, name, image, role, "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, now(), now())`,
+            [id, user.email, user.name ?? null, user.image ?? null, role]
+          );
         }
       }
       return true;
@@ -68,10 +60,7 @@ export const authOptions: NextAuthOptions = {
 
     async jwt({ token, user }) {
       if (user) {
-        // Buscar rol en la DB
-        const dbUser = await db.user.findUnique({
-          where: { email: user.email! },
-        });
+        const dbUser = await queryOne("SELECT id, role FROM users WHERE email = $1", [user.email!]);
         token.role = dbUser?.role ?? "user";
         token.id = dbUser?.id ?? user.id;
       }
