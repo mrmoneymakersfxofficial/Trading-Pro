@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getCurrentUser, requireAuth, requireAdmin } from "@/lib/auth-guard";
 import { activateLicenseSchema } from "@/lib/validations";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { auditLog } from "@/lib/audit";
@@ -14,8 +13,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getCurrentUser();
+    if (!user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
@@ -37,21 +36,21 @@ export async function POST(req: NextRequest) {
     if (license.status === "paused") {
       return NextResponse.json({ error: "Esta licencia está pausada. Contacta al admin." }, { status: 400 });
     }
-    if (license.status === "assigned" && license.assignedToEmail !== session.user.email) {
+    if (license.status === "assigned" && license.assignedToEmail !== user.email) {
       return NextResponse.json({ error: "Esta licencia está asignada a otro usuario." }, { status: 403 });
     }
     if (license.status !== "available" && license.status !== "assigned") {
       return NextResponse.json({ error: `Licencia en estado "${license.status}", no se puede activar.` }, { status: 400 });
     }
 
-    const user = await queryOne("SELECT * FROM users WHERE email = $1", [session.user.email]);
-    if (!user) {
+    const dbUser = await queryOne("SELECT * FROM users WHERE email = $1", [user.email]);
+    if (!dbUser) {
       return NextResponse.json({ error: "Usuario no encontrado." }, { status: 404 });
     }
 
     const existing = await queryOne(
       `SELECT id FROM user_licenses WHERE "userId" = $1 AND "licenseId" = $2 AND status = 'active'`,
-      [user.id, license.id]
+      [dbUser.id, license.id]
     );
     if (existing) {
       return NextResponse.json({ error: "Ya tienes esta licencia activa." }, { status: 400 });
@@ -63,16 +62,16 @@ export async function POST(req: NextRequest) {
 
     await query(
       `INSERT INTO user_licenses (id, "userId", "licenseId", "activatedAt", "expiresAt", status, "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, 'active', now(), now())`,
-      [ulId, user.id, license.id, now.toISOString(), expiresAt.toISOString()]
+      [ulId, dbUser.id, license.id, now.toISOString(), expiresAt.toISOString()]
     );
 
     await query(
       `UPDATE licenses SET status = 'assigned', "assignedToEmail" = $1, "updatedAt" = now() WHERE id = $2`,
-      [session.user.email, license.id]
+      [user.email, license.id]
     );
 
     await auditLog({
-      userId: user.id,
+      userId: dbUser.id,
       action: "license_activate",
       details: { licenseKey: key, licenseId: license.id, expiresAt: expiresAt.toISOString() },
       ipAddress: ip,

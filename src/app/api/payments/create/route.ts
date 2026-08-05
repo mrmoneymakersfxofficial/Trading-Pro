@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getCurrentUser, requireAuth, requireAdmin } from "@/lib/auth-guard";
 import { createPaymentSchema } from "@/lib/validations";
 import { auditLog } from "@/lib/audit";
 
@@ -13,8 +12,8 @@ const PRICES: Record<string, Record<number, number>> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getCurrentUser();
+    if (!user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
@@ -30,8 +29,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Plan no válido." }, { status: 400 });
     }
 
-    const user = await queryOne("SELECT id FROM users WHERE email = $1", [session.user.email]);
-    if (!user) return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
+    const dbUser = await queryOne("SELECT id FROM users WHERE email = $1", [user.email]);
+    if (!dbUser) return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
 
     // Create MercadoPago preference
     const mpAccessToken = process.env.MERCADOPAGO_ACCESS_TOKEN;
@@ -45,7 +44,7 @@ export async function POST(req: NextRequest) {
     await query(
       `INSERT INTO payments (id, "userId", status, amount, currency, "licenseLevel", "licenseDuration", "payerEmail", "createdAt", "updatedAt")
        VALUES ($1, $2, 'pending', $3, 'USD', $4, $5, $6, now(), now())`,
-      [paymentId, user.id, amount, licenseLevel, licenseDuration, session.user.email]
+      [paymentId, dbUser.id, amount, licenseLevel, licenseDuration, user.email]
     );
 
     // Create MP preference
@@ -66,7 +65,7 @@ export async function POST(req: NextRequest) {
             currency_id: "USD",
           },
         ],
-        payer: { email: session.user.email },
+        payer: { email: user.email },
         back_urls: {
           success: `${process.env.NEXTAUTH_URL}/dashboard?payment=success`,
           failure: `${process.env.NEXTAUTH_URL}/dashboard?payment=failure`,
@@ -75,7 +74,7 @@ export async function POST(req: NextRequest) {
         notification_url: `${process.env.NEXTAUTH_URL}/api/payments/webhook`,
         metadata: {
           payment_id: paymentId,
-          user_id: user.id,
+          user_id: dbUser.id,
           license_level: licenseLevel,
           license_duration: licenseDuration,
         },
@@ -96,7 +95,7 @@ export async function POST(req: NextRequest) {
     );
 
     await auditLog({
-      userId: user.id,
+      userId: dbUser.id,
       action: "payment_created",
       details: { paymentId, amount, licenseLevel, licenseDuration, mpPreferenceId: mpData.id },
     });

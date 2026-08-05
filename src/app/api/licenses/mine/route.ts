@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getCurrentUser, requireAuth, requireAdmin } from "@/lib/auth-guard";
 
 // GET /api/licenses/mine — Obtener licencias del usuario actual
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    const user = await getCurrentUser();
+    if (!user) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
@@ -19,7 +18,7 @@ export async function GET() {
        JOIN users u ON u.id = ul."userId"
        WHERE u.email = $1
        ORDER BY ul."createdAt" DESC`,
-      [session.user.email]
+      [user.email]
     );
 
     // Check and update expired

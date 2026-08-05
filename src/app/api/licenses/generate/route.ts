@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getCurrentUser, requireAuth, requireAdmin } from "@/lib/auth-guard";
 import { generateLicenseSchema } from "@/lib/validations";
 import { generateLicenseKey } from "@/lib/licenses";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
@@ -15,8 +14,8 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.role !== "admin") {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
       return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
     }
 
@@ -46,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     await auditLog({
-      userId: session.user.id,
+      userId: user.id,
       action: "license_generate",
       details: { level, durationMonths, count, keys: created.map(c => c.key) },
       ipAddress: ip,

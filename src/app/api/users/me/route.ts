@@ -1,21 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getCurrentUser, requireAuth, requireAdmin } from "@/lib/auth-guard";
 import { updateBrokerSchema } from "@/lib/validations";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    const user = await getCurrentUser();
+    if (!user) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
-    const user = await queryOne(
+    const dbUser = await queryOne(
       `SELECT id, email, name, "brokerId", role FROM users WHERE email = $1`,
-      [session.user.email]
+      [user.email]
     );
-    if (!user) return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
+    if (!dbUser) return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
 
-    return NextResponse.json(user);
+    return NextResponse.json(dbUser);
   } catch (err) {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
@@ -23,8 +22,8 @@ export async function GET() {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+    const user = await getCurrentUser();
+    if (!user) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
     const body = await req.json();
     const parsed = updateBrokerSchema.safeParse(body);
@@ -32,7 +31,7 @@ export async function PATCH(req: NextRequest) {
 
     await query(
       `UPDATE users SET "brokerId" = $1, "updatedAt" = now() WHERE email = $2`,
-      [parsed.data.brokerId || null, session.user.email]
+      [parsed.data.brokerId || null, user.email]
     );
 
     return NextResponse.json({ brokerId: parsed.data.brokerId || null });

@@ -25,6 +25,7 @@ model User {
 
   licenses   UserLicense[]
   auditLogs  AuditLog[]
+  payments   Payment[]
 
   @@map("users")
 }
@@ -68,12 +69,14 @@ model UserLicense {
 model AuditLog {
   id        String   @id @default(cuid())
   userId    String?
+  licenseId String?
   action    String   // "license_activate" | "license_revoke" | "license_pause" | "license_resume" | "license_generate" | "payment_success" | "login" | "register"
   details   String?  // JSON string con detalles adicionales
   ipAddress String?
   createdAt DateTime @default(now())
 
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user    User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  license License? @relation(fields: [licenseId], references: [id], onDelete: SetNull)
 
   @@map("audit_logs")
 }
@@ -92,6 +95,8 @@ model Payment {
   payerEmail        String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }
