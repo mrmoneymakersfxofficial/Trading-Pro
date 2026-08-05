@@ -1,67 +1,58 @@
 import { NextRequest, NextResponse } from "next/server";
+import { query, queryOne } from "@/lib/db-pg";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { generateLicenseSchema } from "@/lib/validations";
 import { generateLicenseKey } from "@/lib/licenses";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { auditLog } from "@/lib/audit";
 
-// POST /api/licenses/generate — Generar licencias (solo admin)
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(`genlic:${ip}`, 10, 60_000);
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Rate limit excedido." }, { status: 429 });
+  }
+
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user || session.user.role !== "admin") {
       return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
     }
 
-    const { level, durationMonths, count } = await req.json();
-
-    if (!level || !durationMonths || !count) {
-      return NextResponse.json(
-        { error: "level, durationMonths y count son obligatorios." },
-        { status: 400 }
-      );
+    const body = await req.json();
+    const parsed = generateLicenseSchema.safeParse(body);
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
     }
 
-    if (!["standard", "pro"].includes(level)) {
-      return NextResponse.json(
-        { error: "level debe ser 'standard' o 'pro'." },
-        { status: 400 }
-      );
-    }
-
-    if (![1, 3, 6, 12].includes(durationMonths)) {
-      return NextResponse.json(
-        { error: "durationMonths debe ser 1, 3, 6 o 12." },
-        { status: 400 }
-      );
-    }
-
-    const safeCount = Math.max(1, Math.min(50, Number(count)));
+    const { level, durationMonths, count } = parsed.data;
     const created = [];
 
-    for (let i = 0; i < safeCount; i++) {
+    for (let i = 0; i < count; i++) {
       let key = generateLicenseKey();
-      // Asegurar unicidad
-      let existing = await db.license.findUnique({ where: { key } });
+      let existing = await queryOne("SELECT id FROM licenses WHERE key = $1", [key]);
       while (existing) {
         key = generateLicenseKey();
-        existing = await db.license.findUnique({ where: { key } });
+        existing = await queryOne("SELECT id FROM licenses WHERE key = $1", [key]);
       }
 
-      const license = await db.license.create({
-        data: {
-          key,
-          level,
-          durationMonths,
-          status: "available",
-        },
-      });
-      created.push(license);
+      const id = `lic-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+      await query(
+        `INSERT INTO licenses (id, key, level, "durationMonths", status, "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, 'available', now(), now())`,
+        [id, key, level, durationMonths]
+      );
+      created.push({ id, key, level, durationMonths });
     }
 
-    return NextResponse.json(
-      { message: `${created.length} licencia(s) generada(s).`, licenses: created },
-      { status: 201 }
-    );
+    await auditLog({
+      userId: session.user.id,
+      action: "license_generate",
+      details: { level, durationMonths, count, keys: created.map(c => c.key) },
+      ipAddress: ip,
+    });
+
+    return NextResponse.json({ message: `${created.length} licencia(s) generada(s).`, licenses: created }, { status: 201 });
   } catch (err) {
     console.error("Generate error:", err);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });

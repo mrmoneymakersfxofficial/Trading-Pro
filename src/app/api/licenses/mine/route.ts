@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
+import { query, queryOne } from "@/lib/db-pg";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
 
 // GET /api/licenses/mine — Obtener licencias del usuario actual
 export async function GET() {
@@ -11,40 +11,23 @@ export async function GET() {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-      include: {
-        licenses: {
-          include: { license: true },
-          orderBy: { createdAt: "desc" },
-        },
-      },
-    });
+    const licenses = await query(
+      `SELECT ul.id, l.key as "licenseKey", l.level, ul.status,
+              ul."activatedAt", ul."expiresAt"
+       FROM user_licenses ul
+       JOIN licenses l ON l.id = ul."licenseId"
+       JOIN users u ON u.id = ul."userId"
+       WHERE u.email = $1
+       ORDER BY ul."createdAt" DESC`,
+      [session.user.email]
+    );
 
-    if (!user) {
-      return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
-    }
-
-    const licenses = user.licenses.map((ul) => ({
-      id: ul.id,
-      licenseKey: ul.license.key,
-      level: ul.license.level,
-      status: ul.status,
-      activatedAt: ul.activatedAt?.toISOString() ?? null,
-      expiresAt: ul.expiresAt?.toISOString() ?? null,
-    }));
-
-    // Check and update expired licenses
-    for (const ul of user.licenses) {
-      if (ul.status === "active" && ul.expiresAt && new Date(ul.expiresAt) < new Date()) {
-        await db.userLicense.update({
-          where: { id: ul.id },
-          data: { status: "expired" },
-        });
-        await db.license.update({
-          where: { id: ul.licenseId },
-          data: { status: "assigned" },
-        });
+    // Check and update expired
+    const now = new Date();
+    for (const lic of licenses) {
+      if (lic.status === "active" && lic.expiresAt && new Date(lic.expiresAt) < now) {
+        await query(`UPDATE user_licenses SET status = 'expired' WHERE id = $1`, [lic.id]);
+        lic.status = "expired";
       }
     }
 

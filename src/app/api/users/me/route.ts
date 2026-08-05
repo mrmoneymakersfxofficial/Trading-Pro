@@ -1,56 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
+import { query, queryOne } from "@/lib/db-pg";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { updateBrokerSchema } from "@/lib/validations";
 
-// GET /api/users/me — Obtener datos del usuario actual
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-    }
+    if (!session?.user?.email) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true, email: true, name: true, brokerId: true, role: true },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
-    }
+    const user = await queryOne(
+      `SELECT id, email, name, "brokerId", role FROM users WHERE email = $1`,
+      [session.user.email]
+    );
+    if (!user) return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
 
     return NextResponse.json(user);
   } catch (err) {
-    console.error("Error:", err);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }
 
-// PATCH /api/users/me — Actualizar broker ID
 export async function PATCH(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "No autenticado" }, { status: 401 });
-    }
+    if (!session?.user?.email) return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
-    const { brokerId } = await req.json();
-    if (typeof brokerId !== "string") {
-      return NextResponse.json(
-        { error: "brokerId debe ser un string." },
-        { status: 400 }
-      );
-    }
+    const body = await req.json();
+    const parsed = updateBrokerSchema.safeParse(body);
+    if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
 
-    const user = await db.user.update({
-      where: { email: session.user.email },
-      data: { brokerId: brokerId || null },
-    });
+    await query(
+      `UPDATE users SET "brokerId" = $1, "updatedAt" = now() WHERE email = $2`,
+      [parsed.data.brokerId || null, session.user.email]
+    );
 
-    return NextResponse.json({ brokerId: user.brokerId });
+    return NextResponse.json({ brokerId: parsed.data.brokerId || null });
   } catch (err) {
-    console.error("Error:", err);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

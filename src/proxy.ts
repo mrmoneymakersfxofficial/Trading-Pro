@@ -1,53 +1,61 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
+// ─── Hybrid proxy: uses Supabase Auth if keys available, else NextAuth JWT ──
 export async function proxy(req: NextRequest) {
-  const token = await getToken({
-    req,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-
   const { pathname } = req.nextUrl;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // ─── Rutas públicas (siempre accesibles) ──────────────────────
-  const publicPaths = ["/", "/auth/login", "/auth/register"];
-  if (publicPaths.includes(pathname)) {
-    // Si ya está autenticado y va a login/register, redirigir según rol
+  // ─── Try Supabase Auth if keys are configured ──────────────
+  if (supabaseUrl && supabaseAnonKey && supabaseAnonKey.length > 10) {
+    try {
+      const { updateSession } = await import("@/lib/supabase/middleware");
+      return updateSession(req);
+    } catch {
+      // Fall through to NextAuth
+    }
+  }
+
+  // ─── Fallback: NextAuth JWT-based protection ───────────────
+  let userRole: string | null = null;
+  let isAuthenticated = false;
+
+  try {
+    const { getToken } = await import("next-auth/jwt");
+    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
     if (token) {
-      const dest = token.role === "admin" ? "/admin" : "/dashboard";
+      isAuthenticated = true;
+      userRole = token.role as string;
+    }
+  } catch {
+    // Not authenticated
+  }
+
+  // ─── Rutas públicas ────────────────────────────────────────
+  const publicPaths = ["/", "/auth/login", "/auth/register", "/api/auth"];
+  if (publicPaths.some(p => pathname.startsWith(p))) {
+    if (isAuthenticated && (pathname === "/auth/login" || pathname === "/auth/register")) {
+      const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map(e => e.trim());
+      const dest = userRole === "admin" ? "/admin" : "/dashboard";
       return NextResponse.redirect(new URL(dest, req.url));
     }
     return NextResponse.next();
   }
 
-  // ─── Rutas de API de auth — siempre permitir ────────────────
-  if (pathname.startsWith("/api/auth")) {
-    return NextResponse.next();
-  }
-
-  // ─── Rutas protegidas — requiere autenticación ──────────────
-  if (!token) {
+  // ─── Protected routes ─────────────────────────────────────
+  if (!isAuthenticated) {
     const loginUrl = new URL("/auth/login", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // ─── Rutas de admin — solo rol "admin" ──────────────────────
-  if (
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/api/licenses/generate") ||
-    pathname === "/api/licenses" ||
-    pathname === "/api/users"
-  ) {
-    if (token.role !== "admin") {
+  // ─── Admin routes ─────────────────────────────────────────
+  const adminPaths = ["/admin", "/api/licenses/generate", "/api/users"];
+  if (pathname === "/api/licenses" || adminPaths.some(p => pathname.startsWith(p))) {
+    if (userRole !== "admin") {
       return NextResponse.redirect(new URL("/dashboard", req.url));
     }
-  }
-
-  // ─── Rutas de dashboard — admin también puede verlo ─────
-  if (pathname.startsWith("/dashboard") && token.role === "admin") {
-    return NextResponse.next();
   }
 
   return NextResponse.next();

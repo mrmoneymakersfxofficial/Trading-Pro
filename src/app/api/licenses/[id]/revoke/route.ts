@@ -1,40 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
+import { query, queryOne } from "@/lib/db-pg";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { auditLog } from "@/lib/audit";
 
-// POST /api/licenses/[id]/revoke — Revocar una licencia
-export async function POST(
-  req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const session = await getServerSession(authOptions);
-    if (!session?.user || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
-    }
+async function checkAdmin() {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || session.user.role !== "admin") return null;
+  return session;
+}
 
-    const { id } = await params;
-    const license = await db.license.findUnique({ where: { id } });
-    if (!license) {
-      return NextResponse.json({ error: "Licencia no encontrada" }, { status: 404 });
-    }
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await checkAdmin();
+  if (!session) return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
 
-    // Update license status
-    await db.license.update({
-      where: { id },
-      data: { status: "revoked" },
-    });
+  const { id } = await params;
+  const license = await queryOne("SELECT * FROM licenses WHERE id = $1", [id]);
+  if (!license) return NextResponse.json({ error: "Licencia no encontrada" }, { status: 404 });
 
-    // Revoke all active user_licenses for this license
-    await db.userLicense.updateMany({
-      where: { licenseId: id, status: "active" },
-      data: { status: "revoked" },
-    });
+  await query(`UPDATE licenses SET status = 'revoked', "updatedAt" = now() WHERE id = $1`, [id]);
+  await query(`UPDATE user_licenses SET status = 'revoked', "updatedAt" = now() WHERE "licenseId" = $1 AND status = 'active'`, [id]);
 
-    return NextResponse.json({ message: "Licencia revocada." });
-  } catch (err) {
-    console.error("Revoke error:", err);
-    return NextResponse.json({ error: "Error interno" }, { status: 500 });
-  }
+  await auditLog({ userId: session.user.id, action: "license_revoke", details: { licenseId: id, key: license.key } });
+  return NextResponse.json({ message: "Licencia revocada." });
 }

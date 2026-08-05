@@ -12,9 +12,13 @@ import {
   BarChart3,
   CheckCircle2,
   Star,
+  Sun,
+  Moon,
 } from "lucide-react";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -400,6 +404,98 @@ function FinalCTA() {
   );
 }
 
+// ─── PRICING ──────────────────────────────────────────────────
+function Pricing() {
+  const plans = [
+    {
+      name: "Standard",
+      price: 49,
+      level: "standard",
+      duration: 1,
+      features: ["1 Bot de Trading", "1 Cuenta MT4/MT5", "Estrategias Standard", "Soporte por Email", "Dashboard Básico"],
+    },
+    {
+      name: "Pro",
+      price: 99,
+      level: "pro",
+      duration: 1,
+      popular: true,
+      features: ["Bots Ilimitados", "Multi-Cuenta MT4/MT5", "Estrategias Pro + IA", "Soporte Prioritario 24/7", "Dashboard Avanzado + Realtime"],
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 bg-zinc-950/50">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          className="text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={fadeUp}
+          custom={0}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
+            Planes y Precios
+          </h2>
+          <p className="mt-4 text-zinc-400 text-lg">
+            Elige el plan que impulse tu trading
+          </p>
+        </motion.div>
+
+        <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
+          {plans.map((plan, i) => (
+            <motion.div
+              key={plan.name}
+              className={`relative p-8 rounded-2xl border ${
+                plan.popular
+                  ? "border-emerald-500/40 bg-emerald-500/5"
+                  : "border-zinc-800 bg-zinc-900/50"
+              }`}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: "-50px" }}
+              variants={fadeUp}
+              custom={i + 1}
+            >
+              {plan.popular && (
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-black">
+                  Más Popular
+                </Badge>
+              )}
+              <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+              <div className="flex items-baseline gap-1 mb-6">
+                <span className="text-4xl font-bold text-white">${plan.price}</span>
+                <span className="text-zinc-400">/mes</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {plan.features.map((feat) => (
+                  <li key={feat} className="flex items-center gap-2 text-sm text-zinc-300">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                    {feat}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/auth/register">
+                <Button
+                  className={`w-full rounded-xl font-semibold ${
+                    plan.popular
+                      ? "bg-emerald-500 hover:bg-emerald-600 text-black"
+                      : "border-zinc-700 text-white hover:bg-zinc-800"
+                  }`}
+                  variant={plan.popular ? "default" : "outline"}
+                >
+                  Comenzar con {plan.name}
+                </Button>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── FOOTER ─────────────────────────────────────────────────
 function Footer() {
   return (
@@ -414,6 +510,21 @@ function Footer() {
         </p>
       </div>
     </footer>
+  );
+}
+
+// ─── THEME TOGGLE ────────────────────────────────────────────
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <button
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+      aria-label="Toggle theme"
+    >
+      <Sun className="w-4 h-4 hidden dark:block" />
+      <Moon className="w-4 h-4 block dark:hidden" />
+    </button>
   );
 }
 
@@ -432,6 +543,7 @@ export default function LandingPage() {
           </Link>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle />
             <Link
               href="#como-funciona"
               className="hidden sm:block text-sm text-zinc-400 hover:text-white transition-colors"
@@ -460,6 +572,7 @@ export default function LandingPage() {
         <Hero />
         <HowItWorks />
         <Features />
+        <Pricing />
         <Testimonials />
         <FinalCTA />
       </main>

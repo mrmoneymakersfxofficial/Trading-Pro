@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
+import { query } from "@/lib/db-pg";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
 
-// GET /api/licenses — Listar todas las licencias (solo admin)
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -11,23 +10,14 @@ export async function GET() {
       return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
     }
 
-    const licenses = await db.license.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        key: true,
-        level: true,
-        durationMonths: true,
-        status: true,
-        assignedToEmail: true,
-        createdAt: true,
-      },
-    });
+    const licenses = await query(
+      `SELECT id, key, level, "durationMonths", status, "assignedToEmail", "createdAt" FROM licenses ORDER BY "createdAt" DESC`
+    );
 
     return NextResponse.json({
-      licenses: licenses.map((l) => ({
+      licenses: licenses.map((l: any) => ({
         ...l,
-        createdAt: l.createdAt.toISOString(),
+        createdAt: l.createdAt instanceof Date ? l.createdAt.toISOString() : l.createdAt,
       })),
     });
   } catch (err) {

@@ -1,101 +1,81 @@
 import { NextRequest, NextResponse } from "next/server";
+import { query, queryOne } from "@/lib/db-pg";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
+import { activateLicenseSchema } from "@/lib/validations";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { auditLog } from "@/lib/audit";
 
-// POST /api/licenses/activate — Activar una license key
 export async function POST(req: NextRequest) {
+  const ip = getClientIp(req);
+  const rl = rateLimit(`activate:${ip}`, 5, 60_000);
+  if (!rl.allowed) {
+    return NextResponse.json({ error: "Demasiados intentos. Espera un minuto." }, { status: 429 });
+  }
+
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    const { key } = await req.json();
-    if (!key) {
-      return NextResponse.json(
-        { error: "Debes proporcionar una clave de licencia." },
-        { status: 400 }
-      );
+    const body = await req.json();
+    // Allow non-strict format for UX (just check it starts with TP-)
+    const { key } = body;
+    if (!key || typeof key !== "string" || !key.startsWith("TP-")) {
+      return NextResponse.json({ error: "Clave de licencia inválida. Formato: TP-XXXX-XXXX-XXXX-XXXX" }, { status: 400 });
     }
 
-    // Buscar la licencia
-    const license = await db.license.findUnique({ where: { key } });
+    const license = await queryOne("SELECT * FROM licenses WHERE key = $1", [key.toUpperCase()]);
     if (!license) {
-      return NextResponse.json(
-        { error: "Clave de licencia no válida." },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Clave de licencia no válida." }, { status: 404 });
     }
 
-    // Validar estado
     if (license.status === "revoked") {
-      return NextResponse.json(
-        { error: "Esta licencia ha sido revocada y no puede activarse." },
-        { status: 400 }
-      );
-    }
-    if (license.status === "assigned" && license.assignedToEmail !== session.user.email) {
-      return NextResponse.json(
-        { error: "Esta licencia está asignada a otro usuario." },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: "Esta licencia ha sido revocada." }, { status: 400 });
     }
     if (license.status === "paused") {
-      return NextResponse.json(
-        { error: "Esta licencia está pausada. Contacta al administrador." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Esta licencia está pausada. Contacta al admin." }, { status: 400 });
+    }
+    if (license.status === "assigned" && license.assignedToEmail !== session.user.email) {
+      return NextResponse.json({ error: "Esta licencia está asignada a otro usuario." }, { status: 403 });
     }
     if (license.status !== "available" && license.status !== "assigned") {
-      return NextResponse.json(
-        { error: `Licencia en estado "${license.status}", no se puede activar.` },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: `Licencia en estado "${license.status}", no se puede activar.` }, { status: 400 });
     }
 
-    // Obtener usuario
-    const user = await db.user.findUnique({
-      where: { email: session.user.email },
-    });
+    const user = await queryOne("SELECT * FROM users WHERE email = $1", [session.user.email]);
     if (!user) {
       return NextResponse.json({ error: "Usuario no encontrado." }, { status: 404 });
     }
 
-    // Verificar si ya tiene esta licencia activa
-    const existing = await db.userLicense.findFirst({
-      where: { userId: user.id, licenseId: license.id, status: "active" },
-    });
+    const existing = await queryOne(
+      `SELECT id FROM user_licenses WHERE "userId" = $1 AND "licenseId" = $2 AND status = 'active'`,
+      [user.id, license.id]
+    );
     if (existing) {
-      return NextResponse.json(
-        { error: "Ya tienes esta licencia activada." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Ya tienes esta licencia activa." }, { status: 400 });
     }
 
     const now = new Date();
-    const expiresAt = new Date(
-      now.getTime() + license.durationMonths * 30 * 24 * 60 * 60 * 1000
+    const expiresAt = new Date(now.getTime() + license.durationMonths * 30 * 24 * 60 * 60 * 1000);
+    const ulId = `ul-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+
+    await query(
+      `INSERT INTO user_licenses (id, "userId", "licenseId", "activatedAt", "expiresAt", status, "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, 'active', now(), now())`,
+      [ulId, user.id, license.id, now.toISOString(), expiresAt.toISOString()]
     );
 
-    // Crear asignación
-    await db.userLicense.create({
-      data: {
-        userId: user.id,
-        licenseId: license.id,
-        status: "active",
-        activatedAt: now,
-        expiresAt,
-      },
-    });
+    await query(
+      `UPDATE licenses SET status = 'assigned', "assignedToEmail" = $1, "updatedAt" = now() WHERE id = $2`,
+      [session.user.email, license.id]
+    );
 
-    // Actualizar licencia
-    await db.license.update({
-      where: { id: license.id },
-      data: {
-        status: "assigned",
-        assignedToEmail: session.user.email,
-      },
+    await auditLog({
+      userId: user.id,
+      action: "license_activate",
+      details: { licenseKey: key, licenseId: license.id, expiresAt: expiresAt.toISOString() },
+      ipAddress: ip,
     });
 
     return NextResponse.json({

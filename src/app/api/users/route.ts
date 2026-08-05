@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
+import { query } from "@/lib/db-pg";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
 
-// GET /api/users — Listar todos los usuarios (solo admin)
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -11,22 +10,14 @@ export async function GET() {
       return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
     }
 
-    const users = await db.user.findMany({
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        role: true,
-        brokerId: true,
-        createdAt: true,
-      },
-    });
+    const users = await query(
+      `SELECT id, email, name, role, "brokerId", "createdAt" FROM users ORDER BY "createdAt" DESC`
+    );
 
     return NextResponse.json({
-      users: users.map((u) => ({
+      users: users.map((u: any) => ({
         ...u,
-        createdAt: u.createdAt.toISOString(),
+        createdAt: u.createdAt instanceof Date ? u.createdAt.toISOString() : u.createdAt,
       })),
     });
   } catch (err) {
