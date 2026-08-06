@@ -3,517 +3,42 @@
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Bot,
-  Shield,
-  Zap,
+  ShieldCheck,
+  Link2,
   TrendingUp,
-  Clock,
-  Lock,
-  BarChart3,
+  ShieldAlert,
+  ZapOff,
+  Globe2,
+  Crosshair,
+  AlertTriangle,
   CheckCircle2,
-  Star,
   Sun,
   Moon,
+  Bot,
+  DollarSign,
+  Clock,
+  Ban,
 } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
+// ─── Animation variants ──────────────────────────────────────
 const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
+  hidden: { opacity: 0, y: 24 },
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.6, ease: "easeOut" },
+    transition: { delay: i * 0.08, duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] },
   }),
 };
 
-// ─── HERO ────────────────────────────────────────────────────
-function Hero() {
-  return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Grid background */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
-      {/* Radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full bg-emerald-500/5 blur-[120px]" />
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-        >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-sm mb-8">
-            <Zap className="w-4 h-4" />
-            Trading Automatizado con IA
-          </div>
-        </motion.div>
-
-        <motion.h1
-          className="text-5xl md:text-7xl font-bold tracking-tight text-white leading-tight"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
-        >
-          Opera con{" "}
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400">
-            Precisión
-          </span>
-          <br />
-          mientras tú descansas
-        </motion.h1>
-
-        <motion.p
-          className="mt-6 text-lg md:text-xl text-zinc-400 max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-        >
-          Trading Pro automatiza tus estrategias en MT4/MT5 con licencias
-          seguras, resultados verificables y control total desde cualquier
-          dispositivo.
-        </motion.p>
-
-        <motion.div
-          className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.45 }}
-        >
-          <Link href="/auth/register">
-            <Button
-              size="lg"
-              className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-8 h-13 text-base rounded-xl shadow-lg shadow-emerald-500/25"
-            >
-              Comenzar Ahora
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-          </Link>
-          <Link href="#como-funciona">
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 h-13 text-base rounded-xl px-8"
-            >
-              Ver Demo
-            </Button>
-          </Link>
-        </motion.div>
-
-        {/* Stats bar */}
-        <motion.div
-          className="mt-16 grid grid-cols-3 gap-8 max-w-lg mx-auto"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 0.8 }}
-        >
-          {[
-            { value: "2.4K+", label: "Usuarios Activos" },
-            { value: "98.7%", label: "Uptime" },
-            { value: "150+", label: "Estrategias" },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
-              <div className="text-2xl md:text-3xl font-bold text-emerald-400">
-                {stat.value}
-              </div>
-              <div className="text-sm text-zinc-500 mt-1">{stat.label}</div>
-            </div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-// ─── CÓMO FUNCIONA ───────────────────────────────────────────
-function HowItWorks() {
-  const steps = [
-    {
-      icon: <Lock className="w-7 h-7" />,
-      title: "1. Obtén tu Licencia",
-      desc: "Regístrate y adquiere una clave de licencia que desbloquea el bot de trading según tu plan (Standard o Pro).",
-    },
-    {
-      icon: <Bot className="w-7 h-7" />,
-      title: "2. Conecta tu Broker",
-      desc: "Ingresa tu ID de cuenta MT4/MT5 y el bot se vincula automáticamente con tu broker para operar por ti.",
-    },
-    {
-      icon: <TrendingUp className="w-7 h-7" />,
-      title: "3. Opera Automáticamente",
-      desc: "El bot ejecuta estrategias probadas 24/7 con gestión de riesgo integrada. Monitorea resultados en tiempo real.",
-    },
-  ];
-
-  return (
-    <section id="como-funciona" className="py-24 px-6">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUp}
-          custom={0}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Cómo Funciona
-          </h2>
-          <p className="mt-4 text-zinc-400 text-lg">
-            Tres pasos para automatizar tu trading
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.title}
-              className="relative p-8 rounded-2xl border border-zinc-800 bg-zinc-900/50 hover:border-emerald-500/30 transition-colors group"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-              variants={fadeUp}
-              custom={i + 1}
-            >
-              <div className="w-14 h-14 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 group-hover:bg-emerald-500/20 transition-colors">
-                {step.icon}
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                {step.title}
-              </h3>
-              <p className="text-zinc-400 leading-relaxed">{step.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── CARACTERÍSTICAS ─────────────────────────────────────────
-function Features() {
-  const features = [
-    {
-      icon: <Bot className="w-6 h-6" />,
-      title: "Bot Autónomo 24/7",
-      desc: "Ejecuta estrategias de trading sin intervención humana. Opera mercados globales las 24 horas, 7 días a la semana.",
-    },
-    {
-      icon: <Shield className="w-6 h-6" />,
-      title: "Gestión de Riesgo",
-      desc: "Stop-loss dinámico, límites de exposición por operación y por día. Protección de capital integrada en cada estrategia.",
-    },
-    {
-      icon: <BarChart3 className="w-6 h-6" />,
-      title: "Dashboard en Tiempo Real",
-      desc: "Visualiza P&L, operaciones abiertas, historial y métricas de rendimiento desde cualquier dispositivo.",
-    },
-    {
-      icon: <Clock className="w-6 h-6" />,
-      title: "Licencias Flexibles",
-      desc: "Planes de 1, 3, 6 o 12 meses. Niveles Standard y Pro. Activa, pausa o revoca desde tu panel de usuario.",
-    },
-    {
-      icon: <Lock className="w-6 h-6" />,
-      title: "Seguridad Enterprise",
-      desc: "Encriptación AES-256, autenticación OAuth, claves únicas por licencia y auditoría de accesos completa.",
-    },
-    {
-      icon: <Zap className="w-6 h-6" />,
-      title: "Multi-Broker",
-      desc: "Compatible con MT4 y MT5. Conecta múltiples cuentas y brokers simultáneamente sin conflictos.",
-    },
-  ];
-
-  return (
-    <section className="py-24 px-6 bg-zinc-950/50">
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUp}
-          custom={0}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Características que Marcan la Diferencia
-          </h2>
-          <p className="mt-4 text-zinc-400 text-lg">
-            Todo lo que necesitas para operar con confianza
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feat, i) => (
-            <motion.div
-              key={feat.title}
-              className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30 hover:border-emerald-500/20 transition-all group"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-              variants={fadeUp}
-              custom={i + 1}
-            >
-              <div className="w-11 h-11 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-110 transition-transform">
-                {feat.icon}
-              </div>
-              <h3 className="text-lg font-semibold text-white mb-2">
-                {feat.title}
-              </h3>
-              <p className="text-zinc-400 text-sm leading-relaxed">
-                {feat.desc}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── TESTIMONIOS ─────────────────────────────────────────────
-function Testimonials() {
-  const testimonials = [
-    {
-      name: "Carlos M.",
-      role: "Trader Independiente",
-      text: "En 3 meses mi cuenta creció un 34% operando el bot Pro. La gestión de riesgo es impecable — nunca una pérdida mayor al 2% por operación.",
-      stars: 5,
-    },
-    {
-      name: "Ana R.",
-      role: "Inversora Particular",
-      text: "Por fin puedo automatizar sin estar pegada a la pantalla. El dashboard me da tranquilidad de ver todo en tiempo real desde el celular.",
-      stars: 5,
-    },
-    {
-      name: "Miguel T.",
-      role: "Fundador de Fund",
-      text: "Gestionamos 12 cuentas con el plan Pro multi-broker. La auditoría y seguridad enterprise nos da compliance total con reguladores.",
-      stars: 5,
-    },
-  ];
-
-  return (
-    <section className="py-24 px-6">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUp}
-          custom={0}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Resultados que Hablan
-          </h2>
-          <p className="mt-4 text-zinc-400 text-lg">
-            Lo que dicen nuestros traders
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {testimonials.map((t, i) => (
-            <motion.div
-              key={t.name}
-              className="p-6 rounded-2xl border border-zinc-800 bg-zinc-900/30"
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-              variants={fadeUp}
-              custom={i + 1}
-            >
-              <div className="flex gap-1 mb-4">
-                {Array.from({ length: t.stars }).map((_, j) => (
-                  <Star
-                    key={j}
-                    className="w-4 h-4 text-emerald-400 fill-emerald-400"
-                  />
-                ))}
-              </div>
-              <p className="text-zinc-300 leading-relaxed mb-6">
-                &ldquo;{t.text}&rdquo;
-              </p>
-              <div>
-                <div className="font-semibold text-white">{t.name}</div>
-                <div className="text-sm text-zinc-500">{t.role}</div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── CTA FINAL ──────────────────────────────────────────────
-function FinalCTA() {
-  return (
-    <section className="py-24 px-6">
-      <div className="max-w-4xl mx-auto text-center">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUp}
-          custom={0}
-        >
-          <div className="relative p-12 md:p-16 rounded-3xl border border-emerald-500/20 bg-gradient-to-b from-emerald-500/5 to-transparent overflow-hidden">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-emerald-500/10 rounded-full blur-[100px]" />
-            <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-                Comienza a Operar con IA Hoy
-              </h2>
-              <p className="text-zinc-400 text-lg mb-8 max-w-xl mx-auto">
-                Únete a miles de traders que ya automatizan sus operaciones.
-                Sin tarjeta de crédito para empezar.
-              </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Link href="/auth/register">
-                  <Button
-                    size="lg"
-                    className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold px-8 h-13 text-base rounded-xl shadow-lg shadow-emerald-500/25"
-                  >
-                    Crear Cuenta Gratis
-                    <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </Link>
-              </div>
-              <div className="mt-6 flex items-center justify-center gap-6 text-sm text-zinc-500">
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  Setup en 5 min
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  Soporte 24/7
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                  Cancela cuando quieras
-                </span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-// ─── PRICING ──────────────────────────────────────────────────
-function Pricing() {
-  const plans = [
-    {
-      name: "Standard",
-      price: 49,
-      level: "standard",
-      duration: 1,
-      features: ["1 Bot de Trading", "1 Cuenta MT4/MT5", "Estrategias Standard", "Soporte por Email", "Dashboard Básico"],
-    },
-    {
-      name: "Pro",
-      price: 99,
-      level: "pro",
-      duration: 1,
-      popular: true,
-      features: ["Bots Ilimitados", "Multi-Cuenta MT4/MT5", "Estrategias Pro + IA", "Soporte Prioritario 24/7", "Dashboard Avanzado + Realtime"],
-    },
-  ];
-
-  return (
-    <section className="py-24 px-6 bg-zinc-950/50">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          variants={fadeUp}
-          custom={0}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Planes y Precios
-          </h2>
-          <p className="mt-4 text-zinc-400 text-lg">
-            Elige el plan que impulse tu trading
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-          {plans.map((plan, i) => (
-            <motion.div
-              key={plan.name}
-              className={`relative p-8 rounded-2xl border ${
-                plan.popular
-                  ? "border-emerald-500/40 bg-emerald-500/5"
-                  : "border-zinc-800 bg-zinc-900/50"
-              }`}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
-              variants={fadeUp}
-              custom={i + 1}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-emerald-500 text-black">
-                  Más Popular
-                </Badge>
-              )}
-              <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold text-white">${plan.price}</span>
-                <span className="text-zinc-400">/mes</span>
-              </div>
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feat) => (
-                  <li key={feat} className="flex items-center gap-2 text-sm text-zinc-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                    {feat}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/auth/register">
-                <Button
-                  className={`w-full rounded-xl font-semibold ${
-                    plan.popular
-                      ? "bg-emerald-500 hover:bg-emerald-600 text-black"
-                      : "border-zinc-700 text-white hover:bg-zinc-800"
-                  }`}
-                  variant={plan.popular ? "default" : "outline"}
-                >
-                  Comenzar con {plan.name}
-                </Button>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── FOOTER ─────────────────────────────────────────────────
-function Footer() {
-  return (
-    <footer className="border-t border-zinc-800 py-8 px-6">
-      <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <Bot className="w-5 h-5 text-emerald-400" />
-          <span className="font-semibold text-white">Trading Pro</span>
-        </div>
-        <p className="text-sm text-zinc-500">
-          &copy; {new Date().getFullYear()} Trading Pro. Todos los derechos reservados.
-        </p>
-      </div>
-    </footer>
-  );
-}
-
-// ─── THEME TOGGLE ────────────────────────────────────────────
+// ─── Theme Toggle ────────────────────────────────────────────
 function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   return (
@@ -528,18 +53,377 @@ function ThemeToggle() {
   );
 }
 
+// ─── HERO ────────────────────────────────────────────────────
+function Hero() {
+  return (
+    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
+      {/* Background grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      {/* Radial glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] rounded-full bg-emerald-500/[0.04] blur-[140px]" />
+
+      <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
+        <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/[0.07] text-emerald-400 text-xs font-medium tracking-wide uppercase mb-8">
+            <ZapOff className="w-3.5 h-3.5" />
+            Algoritmo 100% Automatizado · Forex
+          </div>
+        </motion.div>
+
+        <motion.h1
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-[3.5rem] font-bold text-white leading-[1.1] tracking-tight"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+        >
+          Automatiza tu Trading{" "}
+          <span className="text-emerald-400">Institucional</span>{" "}
+          en Forex{" "}
+          <br className="hidden md:block" />
+          sin Perder el Control.
+        </motion.h1>
+
+        <motion.p
+          className="mt-6 text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto leading-relaxed"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.25 }}
+        >
+          Algoritmo 100% automatizado operando las sesiones de{" "}
+          <span className="text-zinc-200 font-medium">Londres</span> y{" "}
+          <span className="text-zinc-200 font-medium">Nueva York</span>.
+          Tú mantienes el control absoluto de tu capital.
+        </motion.p>
+
+        <motion.div
+          className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
+        >
+          <Link href="/auth/register">
+            <Button
+              size="lg"
+              className="h-14 px-8 text-base font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_32px_rgba(16,185,129,0.25)] hover:shadow-[0_0_48px_rgba(16,185,129,0.35)] transition-all duration-300"
+            >
+              Solicitar Licencia (Mínimo $500 USD)
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+          <Link
+            href="#como-funciona"
+            className="text-sm text-zinc-400 hover:text-white transition-colors underline underline-offset-4 decoration-zinc-600 hover:decoration-emerald-500"
+          >
+            Ver cómo funciona
+          </Link>
+        </motion.div>
+
+        {/* Abstract dashboard mockup */}
+        <motion.div
+          className="mt-16 relative mx-auto max-w-3xl"
+          initial={{ opacity: 0, y: 30, scale: 0.97 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 1, delay: 0.6 }}
+        >
+          <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/40 backdrop-blur-sm p-6 shadow-2xl shadow-black/40">
+            {/* Top bar */}
+            <div className="flex items-center gap-2 mb-5">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
+              <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
+              <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
+              <span className="ml-3 text-xs text-zinc-500 font-mono">CPA EA Trading Bot — Live</span>
+            </div>
+            {/* Chart lines */}
+            <div className="grid grid-cols-4 gap-4">
+              <div className="col-span-3 space-y-3">
+                <div className="h-2 w-24 bg-emerald-500/20 rounded" />
+                <svg className="w-full h-28 text-emerald-500/30" viewBox="0 0 400 100" fill="none">
+                  <path d="M0 80 Q50 70 80 50 T160 35 T240 45 T320 20 T400 30" stroke="currentColor" strokeWidth="2" />
+                  <path d="M0 80 Q50 70 80 50 T160 35 T240 45 T320 20 T400 30" stroke="url(#glow)" strokeWidth="1" filter="blur(2px)" />
+                  <defs>
+                    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
+                      <stop offset="0%" stopColor="rgb(16,185,129)" stopOpacity="0.6" />
+                      <stop offset="100%" stopColor="rgb(16,185,129)" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div className="space-y-2">
+                {[
+                  { label: "P&L", value: "+12.4%", green: true },
+                  { label: "Win Rate", value: "68.2%" },
+                  { label: "Drawdown", value: "-2.1%" },
+                  { label: "Ops/mes", value: "147" },
+                ].map((s) => (
+                  <div key={s.label} className="bg-zinc-800/40 rounded-lg px-3 py-2">
+                    <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{s.label}</p>
+                    <p className={`text-sm font-semibold ${s.green ? "text-emerald-400" : "text-zinc-200"}`}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          {/* Glow behind card */}
+          <div className="absolute -inset-4 bg-emerald-500/[0.03] blur-3xl rounded-3xl -z-10" />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ─── CÓMO FUNCIONA ──────────────────────────────────────────
+function HowItWorks() {
+  const steps = [
+    {
+      icon: DollarSign,
+      title: "Fondea tu Cuenta",
+      desc: "Abre tu cuenta en nuestro broker asociado con $500 USD — capital óptimo para gestión de riesgo.",
+    },
+    {
+      icon: Link2,
+      title: "Conexión Segura",
+      desc: "Vinculamos nuestra tecnología a tu cuenta vía SaaS. Todo corre 24/5 en la nube.",
+    },
+    {
+      icon: TrendingUp,
+      title: "Crecimiento Compartido",
+      desc: "Te quedas con el 80% de las ganancias. Nosotros cobramos un 20% a fin de mes. Si no ganas, no cobramos.",
+    },
+  ];
+
+  return (
+    <section id="como-funciona" className="py-24 px-6">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          className="text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={fadeUp}
+          custom={0}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
+            Un modelo alineado con tu éxito
+          </h2>
+        </motion.div>
+
+        <motion.div
+          className="grid md:grid-cols-3 gap-8"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={stagger}
+        >
+          {steps.map((step, i) => (
+            <motion.div key={step.title} variants={fadeUp} custom={i}>
+              <div className="relative p-8 rounded-2xl border border-zinc-800/60 bg-zinc-900/30 h-full">
+                {/* Step number */}
+                <span className="absolute top-6 right-6 text-5xl font-bold text-zinc-800/50 select-none">
+                  {i + 1}
+                </span>
+                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5">
+                  <step.icon className="w-6 h-6 text-emerald-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">{step.title}</h3>
+                <p className="text-sm text-zinc-400 leading-relaxed">{step.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ─── VENTAJA COMPETITIVA ────────────────────────────────────
+function RiskManagement() {
+  const cards = [
+    {
+      icon: Crosshair,
+      title: "Riesgo Milimétrico",
+      desc: "Riesgo estricto del 1% por operación.",
+    },
+    {
+      icon: ZapOff,
+      title: "Circuit Breaker Diario",
+      desc: "Si la cuenta detecta -3% de retroceso en un día, el bot se apaga hasta el día siguiente. Cero venganzas contra el mercado.",
+    },
+    {
+      icon: Globe2,
+      title: "Filtro Macroeconómico",
+      desc: "Reducción automática de exposición al 50% durante NFP, CPI y FOMC.",
+    },
+    {
+      icon: ShieldAlert,
+      title: "Estrategia Pura",
+      desc: "Toma de liquidez en M15. Cero martingala, cero promedios. Ratios 1:1 y 1:2.",
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6 bg-zinc-950/50">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          className="text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={fadeUp}
+          custom={0}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
+            Protección de Capital por Diseño
+          </h2>
+        </motion.div>
+
+        <motion.div
+          className="grid sm:grid-cols-2 gap-6"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={stagger}
+        >
+          {cards.map((card, i) => (
+            <motion.div key={card.title} variants={fadeUp} custom={i}>
+              <div className="p-7 rounded-2xl border border-zinc-800/60 bg-zinc-900/30 h-full">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                    <card.icon className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                </div>
+                <p className="text-sm text-zinc-400 leading-relaxed">{card.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ─── REGLAS DEL SISTEMA ─────────────────────────────────────
+function Rules() {
+  const rules = [
+    {
+      icon: DollarSign,
+      text: "Balance mínimo de operación: $600 USD (incluyendo margen de crecimiento).",
+    },
+    {
+      icon: Ban,
+      text: "Retiros que reduzcan el balance por debajo del mínimo pausarán el software.",
+    },
+    {
+      icon: Clock,
+      text: "El pago puntual del 20% de profit share es requisito para mantener la licencia activa.",
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6">
+      <div className="max-w-3xl mx-auto">
+        <motion.div
+          className="text-center mb-14"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={fadeUp}
+          custom={0}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
+            Reglas Claras para Relaciones a Largo Plazo
+          </h2>
+        </motion.div>
+
+        <motion.div
+          className="space-y-5"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={stagger}
+        >
+          {rules.map((rule, i) => (
+            <motion.div key={i} variants={fadeUp} custom={i}>
+              <div className="flex items-start gap-4 p-6 rounded-xl border border-zinc-800/50 bg-zinc-900/20">
+                <div className="w-9 h-9 rounded-lg bg-zinc-800/60 flex items-center justify-center shrink-0 mt-0.5">
+                  <rule.icon className="w-4 h-4 text-zinc-400" />
+                </div>
+                <p className="text-sm text-zinc-300 leading-relaxed">{rule.text}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FOOTER / CTA FINAL ────────────────────────────────────
+function FinalCTA() {
+  return (
+    <section className="py-24 px-6 bg-zinc-950/50">
+      <div className="max-w-3xl mx-auto text-center">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px" }}
+          variants={fadeUp}
+          custom={0}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            ¿Listo para escalar tus operaciones automáticas?
+          </h2>
+
+          <Link href="/auth/register">
+            <Button
+              size="lg"
+              className="h-14 px-10 text-base font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_32px_rgba(16,185,129,0.25)] hover:shadow-[0_0_48px_rgba(16,185,129,0.35)] transition-all duration-300"
+            >
+              Activar mi Licencia Hoy
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </Link>
+
+          <p className="mt-10 text-xs text-zinc-600 leading-relaxed max-w-xl mx-auto">
+            <AlertTriangle className="w-3 h-3 inline mr-1 -mt-0.5" />
+            Disclaimer: El trading de Forex conlleva riesgos significativos y puede no ser adecuado para todos los inversores.
+            Los resultados pasados no garantizan resultados futuros. Solo opere con capital que pueda permitirse perder.
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FOOTER ─────────────────────────────────────────────────
+function Footer() {
+  return (
+    <footer className="border-t border-zinc-800/40 py-8 px-6">
+      <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <Bot className="w-5 h-5 text-emerald-400" />
+          <span className="font-semibold text-white text-sm">CPA EA Trading Bot</span>
+        </div>
+        <p className="text-xs text-zinc-600">
+          &copy; {new Date().getFullYear()} CPA EA Trading Bot. Todos los derechos reservados.
+        </p>
+      </div>
+    </footer>
+  );
+}
+
 // ─── LANDING PAGE COMPLETA ──────────────────────────────────
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-zinc-950 text-white">
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <nav className="sticky top-0 z-50 border-b border-zinc-800/40 bg-zinc-950/80 backdrop-blur-xl">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
               <Bot className="w-5 h-5 text-emerald-400" />
             </div>
-            <span className="text-lg font-bold text-white">Trading Pro</span>
+            <span className="text-lg font-bold text-white tracking-tight">CPA EA</span>
           </Link>
 
           <div className="flex items-center gap-4">
@@ -559,9 +443,9 @@ export default function LandingPage() {
             <Link href="/auth/register">
               <Button
                 size="sm"
-                className="bg-emerald-500 hover:bg-emerald-600 text-black font-semibold rounded-lg"
+                className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold rounded-lg transition-all duration-200"
               >
-                Registro
+                Solicitar Licencia
               </Button>
             </Link>
           </div>
@@ -571,9 +455,8 @@ export default function LandingPage() {
       <main className="flex-1">
         <Hero />
         <HowItWorks />
-        <Features />
-        <Pricing />
-        <Testimonials />
+        <RiskManagement />
+        <Rules />
         <FinalCTA />
       </main>
 
