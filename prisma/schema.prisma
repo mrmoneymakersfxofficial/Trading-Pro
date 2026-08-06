@@ -32,14 +32,27 @@ model User {
 
 // ─── LICENCIAS ────────────────────────────────────────────────
 model License {
-  id              String   @id @default(cuid())
-  key             String   @unique // Formato: TP-XXXX-XXXX-XXXX-XXXX
-  level           String   @default("standard") // "standard" | "pro"
-  durationMonths  Int      @default(1) // 1, 3, 6, 12
-  status          String   @default("available") // "available" | "assigned" | "paused" | "revoked"
-  assignedToEmail String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                String    @id @default(cuid())
+  key               String    @unique // Formato: TP-XXXX-XXXX-XXXX-XXXX
+  level             String    @default("standard") // "standard" | "pro"
+  durationMonths    Int       @default(1) // 1, 3, 6, 12
+  status            String    @default("available") // "available" | "assigned" | "active" | "payment_due" | "balance_low" | "expired" | "paused" | "revoked"
+  assignedToEmail   String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  // Bot verification fields
+  clientName         String?
+  clientEmail        String?
+  machineId          String?   // MAC address del VPS (primer dispositivo que activa)
+  accountNumber      Int?      // Número de cuenta MT5 vinculada
+  minBalanceUsd      Decimal?  @default(600) // Balance mínimo en USD
+  profitSharePercent Decimal?  @default(20) // % de ganancias que corresponde
+  lastPaymentDate    DateTime?
+  lastPaymentAmount  Decimal?
+  revokedAt          DateTime?
+  notes              String?
+  expiresAt          DateTime? // Fecha de expiración de la licencia
 
   userLicenses UserLicense[]
   auditLogs    AuditLog[]
@@ -99,4 +112,18 @@ model Payment {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("payments")
+}
+
+// ─── LICENSE CHECKS (audit del bot) ────────────────────────
+model LicenseCheck {
+  id             String   @id @default(uuid())
+  licenseKey     String
+  machineId      String?  @map("machine_id")
+  accountNumber  Int?     @map("account_number")
+  botVersion     String?  @map("bot_version")
+  statusReturned String   @map("status_returned")
+  ipAddress      String?  @map("ip_address")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("license_checks")
 }
