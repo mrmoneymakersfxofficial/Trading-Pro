@@ -44,15 +44,19 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       if (account?.provider === "google" && user.email) {
-        const existing = await queryOne("SELECT id FROM users WHERE email = $1", [user.email]);
+        const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map(e => e.trim());
+        const shouldBeAdmin = adminEmails.includes(user.email);
+        const existing = await queryOne("SELECT id, role FROM users WHERE email = $1", [user.email]);
         if (!existing) {
           const id = `user-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
-          const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map(e => e.trim());
-          const role = adminEmails.includes(user.email) ? "admin" : "user";
+          const role = shouldBeAdmin ? "admin" : "user";
           await query(
             `INSERT INTO users (id, email, name, image, role, "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, now(), now())`,
             [id, user.email, user.name ?? null, user.image ?? null, role]
           );
+        } else if (shouldBeAdmin && existing.role !== "admin") {
+          // Ensure admin emails always have admin role
+          await query(`UPDATE users SET role = 'admin', "updatedAt" = now() WHERE email = $1`, [user.email]);
         }
       }
       return true;
