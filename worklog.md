@@ -26,3 +26,34 @@ Stage Summary:
 - MercadoPago payments integrated (needs MERCADOPAGO_ACCESS_TOKEN env var)
 - Missing: NEXT_PUBLIC_SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY for full Supabase Auth
 - Missing: Google OAuth credentials (GOOGLE_CLIENT_ID/SECRET)
+
+---
+Task ID: 2
+Agent: Main Agent
+Task: Create /api/license/verify endpoint for MT5 bot, configure Supabase API keys, deploy to Vercel
+
+Work Log:
+- Saved Supabase anon key and service role key to .env
+- Added NEXT_PUBLIC_SUPABASE_ANON_KEY and SUPABASE_SERVICE_ROLE_KEY to Vercel env
+- Created SQL migration: added 10 new columns to licenses table (clientName, clientEmail, machineId, accountNumber, minBalanceUsd, profitSharePercent, lastPaymentDate, lastPaymentAmount, revokedAt, notes, expiresAt)
+- Created license_checks audit table with indexes
+- Ran migration successfully against Supabase PostgreSQL
+- Created /api/license/verify endpoint with full logic:
+  - License lookup by key
+  - Status checks (active, payment_due, balance_low, expired, revoked)
+  - Machine ID binding on first activation
+  - Machine ID / account number mismatch detection
+  - Date-based expiry auto-detection
+  - Rate limiting (10 req/min per license_key)
+  - Audit logging to license_checks table
+- Updated Prisma schema with all new fields and LicenseCheck model
+- Seeded test licenses: TP-TEST-1234-5678-9ABC (active), TP-DUE-AAAA-BBBB-CCCC (payment_due), TP-EXP-DDDD-EEEE-FFFF (expired)
+- Build successful with new route visible
+- Git push to main (commit 85ab712)
+- Vercel deploy successful
+
+Stage Summary:
+- Endpoint LIVE: https://trading-pro-plum.vercel.app/api/license/verify
+- All 5 status responses tested and working: active, payment_due, expired, revoked, unauthorized
+- Machine ID binding and mismatch detection working
+- license_checks audit table recording all verifications
