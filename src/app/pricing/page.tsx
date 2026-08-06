@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 
 const features = [
   "Depósito inicial: $650 USD (va al broker, no a nosotros)",
-  "Algoritmo 100% automatizado 24/5",
+  "Algoritmo propietario 100% automatizado 24/5",
   "Pares: EUR/USD, GBP/USD, USD/JPY en M15",
   "Gestión de riesgo institucional (1% por op, circuit breaker -3%)",
-  "Actualizaciones y soporte incluidos",
+  "Actualizaciones del algoritmo y soporte incluidos",
   "Sin ganancias = sin costo",
 ];
 
@@ -31,7 +31,7 @@ export default function PricingPage() {
           href="/"
           className="inline-block mb-8 text-sm text-zinc-400 hover:text-white transition-colors"
         >
-          ← Volver
+          ← Volver al inicio
         </Link>
 
         <motion.div
@@ -45,8 +45,12 @@ export default function PricingPage() {
               <Bot className="w-6 h-6 text-emerald-400" />
             </div>
           </div>
-          <h1 className="text-4xl font-bold text-white mb-3">Planes y Precios</h1>
-          <p className="text-lg text-zinc-400">Sin costo fijo. Solo pagas cuando ganas.</p>
+          <h1 className="text-4xl font-bold text-white mb-3">
+            Sin costo fijo. Solo gana cuando usted gana.
+          </h1>
+          <p className="text-lg text-zinc-400">
+            Sin suscripción. Sin mensualidad. Solo 20% de las ganancias.
+          </p>
         </motion.div>
 
         <motion.div
@@ -62,9 +66,14 @@ export default function PricingPage() {
             </div>
 
             <div className="text-center mb-8 pt-2">
-              <div className="text-4xl font-bold text-white">$0<span className="text-lg font-normal text-zinc-400">/mes</span></div>
+              <div className="text-4xl font-bold text-white">
+                $0<span className="text-lg font-normal text-zinc-400">/mes</span>
+              </div>
               <p className="text-sm text-zinc-400 mt-2">
-                + 20% profit share solo sobre ganancias
+                + 20% de las ganancias mensuales
+              </p>
+              <p className="text-xs text-zinc-500 mt-1">
+                Si no hay ganancias: no cobramos nada
               </p>
             </div>
 
@@ -81,6 +90,13 @@ export default function PricingPage() {
                   <p className="text-sm text-zinc-300">{feature}</p>
                 </motion.div>
               ))}
+            </div>
+
+            <div className="p-4 rounded-xl border border-zinc-800/60 bg-zinc-800/30 mb-6">
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Depósito inicial: <span className="text-zinc-200 font-medium">$650 USD</span> — 100% suyo, en su cuenta de broker.
+                Incluye: algoritmo propietario, actualizaciones y soporte.
+              </p>
             </div>
 
             <Link href="/auth/register" className="block">

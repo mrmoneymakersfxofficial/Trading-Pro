@@ -62,7 +62,7 @@ export default function LoginPage() {
           <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
             <Bot className="w-6 h-6 text-emerald-400" />
           </div>
-          <span className="text-2xl font-bold text-white">Trading Pro</span>
+          <span className="text-2xl font-bold text-white">EA Trading Pro</span>
         </div>
 
         <div className="p-8 rounded-2xl border border-zinc-800 bg-zinc-900/50">

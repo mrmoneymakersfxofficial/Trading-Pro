@@ -7,10 +7,11 @@
 //
 // Response statuses: active | payment_due | balance_low | expired | revoked | unauthorized
 //
-// IMPORTANT: balance_low is ONLY triggered by admin action or withdrawal webhook.
+// IMPORTANT: balance_low is ONLY triggered by admin action when a capital
+// withdrawal that compromises operational balance is detected.
 // Trading losses (drawdown) NEVER trigger balance_low.
-// If balance drops to $50 by drawdown → license stays ACTIVE.
-// If client withdraws and leaves < $250 → admin/webhook sets balance_low.
+// If balance drops to $40 by drawdown → license stays ACTIVE.
+// The exact operational threshold is INTERNAL and never exposed publicly.
 // ─────────────────────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
@@ -192,7 +193,6 @@ export async function POST(req: NextRequest) {
           message: "Licencia activada y vinculada a este dispositivo.",
           expires_at: license.expiresAt ?? null,
           profit_share_percent: Number(license.profitSharePercent ?? 20),
-          min_balance_usd: Number(license.minBalanceUsd ?? 250),
         });
       }
 
@@ -274,7 +274,6 @@ export async function POST(req: NextRequest) {
         message: "Licencia activa.",
         expires_at: license.expiresAt ?? null,
         profit_share_percent: Number(license.profitSharePercent ?? 20),
-        min_balance_usd: Number(license.minBalanceUsd ?? 250),
       });
     }
 

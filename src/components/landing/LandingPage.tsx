@@ -63,7 +63,7 @@ function Hero() {
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/[0.07] text-emerald-400 text-xs font-medium tracking-wide uppercase mb-8">
             <ZapOff className="w-3.5 h-3.5" />
-            Algoritmo 100% Automatizado · Forex
+            Algoritmo Propietario · 100% Automatizado
           </div>
         </motion.div>
 
@@ -73,11 +73,8 @@ function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.1 }}
         >
-          Automatiza tu Trading{" "}
-          <span className="text-emerald-400">Institucional</span>{" "}
-          en Forex{" "}
-          <br className="hidden md:block" />
-          sin Perder el Control.
+          Trading Algorítmico Automatizado{" "}
+          <span className="text-emerald-400">para MT5</span>
         </motion.h1>
 
         <motion.p
@@ -86,10 +83,9 @@ function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.25 }}
         >
-          Algoritmo 100% automatizado operando las sesiones de{" "}
-          <span className="text-zinc-200 font-medium">Londres</span> y{" "}
-          <span className="text-zinc-200 font-medium">Nueva York</span>.
-          Tú mantienes el control absoluto de tu capital.
+          Usted gana el <span className="text-zinc-200 font-medium">80%</span>, nosotros el{" "}
+          <span className="text-zinc-200 font-medium">20%</span>.
+          Si no gana, no cobramos.
         </motion.p>
 
         <motion.div
@@ -103,7 +99,7 @@ function Hero() {
               size="lg"
               className="h-14 px-8 text-base font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_32px_rgba(16,185,129,0.25)] hover:shadow-[0_0_48px_rgba(16,185,129,0.35)] transition-all duration-300"
             >
-              Solicitar Licencia (Mínimo $650 USD)
+              Solicitar Licencia — Desde $650 USD
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </Link>
@@ -113,6 +109,25 @@ function Hero() {
           >
             Ver cómo funciona
           </Link>
+        </motion.div>
+
+        {/* Metrics bar */}
+        <motion.div
+          className="mt-12 flex items-center justify-center gap-8 sm:gap-12"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.55 }}
+        >
+          {[
+            { label: "Rendimiento", value: "+12.4%" },
+            { label: "Win Rate", value: "68.2%" },
+            { label: "Operaciones", value: "580+" },
+          ].map((m) => (
+            <div key={m.label} className="text-center">
+              <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{m.value}</p>
+              <p className="text-xs text-zinc-500 uppercase tracking-wider mt-1">{m.label}</p>
+            </div>
+          ))}
         </motion.div>
 
         {/* Abstract dashboard mockup */}
@@ -128,7 +143,7 @@ function Hero() {
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
               <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
-              <span className="ml-3 text-xs text-zinc-500 font-mono">EA Trading Bot — Live</span>
+              <span className="ml-3 text-xs text-zinc-500 font-mono">EA Trading Pro — Live</span>
             </div>
             {/* Chart lines */}
             <div className="grid grid-cols-4 gap-4">
@@ -150,7 +165,7 @@ function Hero() {
                   { label: "P&L", value: "+12.4%", green: true },
                   { label: "Win Rate", value: "68.2%" },
                   { label: "Drawdown", value: "-2.1%" },
-                  { label: "Ops/mes", value: "147" },
+                  { label: "Ops/mes", value: "580+" },
                 ].map((s) => (
                   <div key={s.label} className="bg-zinc-800/40 rounded-lg px-3 py-2">
                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{s.label}</p>
@@ -173,18 +188,18 @@ function HowItWorks() {
   const steps = [
     {
       icon: DollarSign,
-      title: "Fondea tu Cuenta",
-      desc: "Abre tu cuenta en nuestro broker asociado con $650 USD — capital óptimo para gestión de riesgo.",
+      title: "Abra su cuenta en nuestro broker recomendado",
+      desc: "Spreads bajos, ejecución rápida y compatibilidad total con nuestro algoritmo. Depósito mínimo: $650 USD. Capital 100% suyo en su cuenta de broker.",
     },
     {
       icon: Link2,
-      title: "Conexión Segura",
-      desc: "Vinculamos nuestra tecnología a tu cuenta vía SaaS. Todo corre 24/5 en la nube.",
+      title: "Conecte su MetaTrader 5",
+      desc: "Instrucciones paso a paso. Toma 10 minutos. Vinculamos la licencia a su VPS y cuenta MT5 de forma segura.",
     },
     {
       icon: TrendingUp,
-      title: "Crecimiento Compartido",
-      desc: "Te quedas con el 80% de las ganancias. Nosotros cobramos un 20% a fin de mes. Si no ganas, no cobramos.",
+      title: "El algoritmo opera profesionalmente",
+      desc: "Usted gana el 80%, nosotros el 20%. Sin costo fijo. Si no gana, no cobramos. Todo funciona 100% automático 24/5.",
     },
   ];
 
@@ -200,8 +215,11 @@ function HowItWorks() {
           custom={0}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Un modelo alineado con tu éxito
+            Un modelo alineado con su éxito
           </h2>
+          <p className="text-zinc-400 mt-3 max-w-xl mx-auto text-sm">
+            Sin suscripción fija. Sin sorpresas. Solo ganancias compartidas.
+          </p>
         </motion.div>
 
         <motion.div
@@ -238,7 +256,7 @@ function RiskManagement() {
     {
       icon: Crosshair,
       title: "Riesgo Milimétrico",
-      desc: "Riesgo estricto del 1% por operación.",
+      desc: "Riesgo estricto del 1% por operación. Cada trade está calculado para proteger su capital.",
     },
     {
       icon: ZapOff,
@@ -248,12 +266,12 @@ function RiskManagement() {
     {
       icon: Globe2,
       title: "Filtro Macroeconómico",
-      desc: "Reducción automática de exposición al 50% durante NFP, CPI y FOMC.",
+      desc: "Reducción automática de exposición al 50% durante NFP, CPI y FOMC. El algoritmo se adapta a condiciones de noticias.",
     },
     {
       icon: ShieldAlert,
       title: "Estrategia Pura",
-      desc: "Toma de liquidez en M15. Cero martingala, cero promedios. Ratios 1:1 y 1:2.",
+      desc: "Toma de liquidez en M15. Cero martingala, cero promedios, cero grid. Ratios 1:1 y 1:2 con confirmación escalonada.",
     },
   ];
 
@@ -302,15 +320,14 @@ function RiskManagement() {
 // ─── TECNOLOGÍA DEL ALGORITMO ──────────────────────────────
 function Technology() {
   const items = [
-    "Pares: EUR/USD · GBP/USD · USD/JPY",
-    "Timeframe: M15",
-    "Estrategia: Trend following + patrones de liquidez institucional",
+    "EUR/USD · GBP/USD · USD/JPY en M15",
+    "Trend following + patrones de liquidez institucional",
     "Algoritmo propietario multi-filtro con confirmación escalonada",
     "Trailing stop dinámico",
     "Escala parcial de ganancias",
     "Filtro macroeconómico automático",
-    "Circuit breaker diario -3%",
-    "Riesgo: 1% por operación",
+    "Circuit breaker diario de protección",
+    "Riesgo controlado: 1% por operación",
   ];
 
   return (
@@ -327,6 +344,9 @@ function Technology() {
           <h2 className="text-3xl md:text-4xl font-bold text-white">
             Tecnología del Algoritmo
           </h2>
+          <p className="text-zinc-400 mt-3 max-w-xl mx-auto text-sm">
+            Algoritmo propietario desarrollado con gestión de riesgo institucional.
+          </p>
         </motion.div>
 
         <motion.div
@@ -355,13 +375,13 @@ function Technology() {
 // ─── REGLAS DEL SISTEMA ─────────────────────────────────────
 function Rules() {
   const rules = [
-    "Depósito inicial mínimo: $650 USD (capital 100% tuyo)",
-    "Profit share: 20% solo sobre ganancias mensuales",
+    "Depósito inicial mínimo: $650 USD (capital 100% suyo)",
+    "20% solo sobre ganancias mensuales",
     "Sin ganancias = sin costo",
-    "Retirá tus ganancias cuando quieras",
-    "Si retirás capital bajo el mínimo operativo: algoritmo se pausa",
-    "Pérdidas por trading: NUNCA bloquean tu acceso",
+    "Retire sus ganancias cuando desee",
+    "Las pérdidas por trading NUNCA bloquean su acceso",
     "Sin martingale · Sin grid · Sin hedging agresivo",
+    "Opera en sesiones London + New York (alta liquidez)",
   ];
 
   return (
@@ -416,8 +436,11 @@ function FinalCTA() {
           custom={0}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            ¿Listo para escalar tus operaciones automáticas?
+            ¿Listo para automatizar su trading?
           </h2>
+          <p className="text-zinc-400 mb-8 max-w-lg mx-auto text-sm">
+            Sin costo fijo. Sin riesgo oculto. Solo 20% de las ganancias que el algoritmo genere para usted.
+          </p>
 
           <Link href="/auth/register">
             <Button
@@ -492,6 +515,12 @@ export default function LandingPage() {
               className="hidden sm:block text-sm text-zinc-400 hover:text-white transition-colors"
             >
               Cómo Funciona
+            </Link>
+            <Link
+              href="/pricing"
+              className="hidden sm:block text-sm text-zinc-400 hover:text-white transition-colors"
+            >
+              Precios
             </Link>
             <Link
               href="/auth/login"

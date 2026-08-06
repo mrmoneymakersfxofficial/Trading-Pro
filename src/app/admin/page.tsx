@@ -173,7 +173,7 @@ export default function AdminPanel() {
             <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
               <Bot className="w-5 h-5 text-emerald-400" />
             </div>
-            <span className="text-lg font-bold">Trading Pro</span>
+            <span className="text-lg font-bold">EA Trading Pro</span>
             <Badge variant="outline" className="ml-2 text-emerald-400 border-emerald-500/30">
               ADMIN
             </Badge>

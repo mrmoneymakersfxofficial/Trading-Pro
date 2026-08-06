@@ -58,8 +58,8 @@ export async function POST(req: NextRequest) {
         items: [
           {
             id: paymentId,
-            title: `Trading Pro — ${licenseLevel.toUpperCase()} ${licenseDuration} mes${licenseDuration > 1 ? "es" : ""}`,
-            description: `Licencia ${licenseLevel.toUpperCase()} para Trading Pro Bot`,
+            title: `EA Trading Pro — ${licenseLevel.toUpperCase()} ${licenseDuration} mes${licenseDuration > 1 ? "es" : ""}`,
+            description: `Licencia ${licenseLevel.toUpperCase()} para EA Trading Pro Bot`,
             quantity: 1,
             unit_price: amount,
             currency_id: "USD",
