@@ -56,7 +56,7 @@ function Hero() {
       {/* Background grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
       {/* Radial glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] rounded-full bg-emerald-500/[0.06] blur-[160px]" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(900px,100vw)] h-[min(600px,80vw)] rounded-full bg-emerald-500/[0.06] blur-[160px]" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
@@ -506,7 +506,7 @@ function Footer() {
 // ─── LANDING PAGE COMPLETA ──────────────────────────────────
 export default function LandingPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-950 text-white">
+    <div className="min-h-screen flex flex-col bg-zinc-950 text-white overflow-x-hidden">
       {/* Premium Effects — Landing only */}
       <GlowParticleTrail />
       <BackgroundParticles />
