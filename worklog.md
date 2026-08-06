@@ -57,3 +57,26 @@ Stage Summary:
 - All 5 status responses tested and working: active, payment_due, expired, revoked, unauthorized
 - Machine ID binding and mismatch detection working
 - license_checks audit table recording all verifications
+---
+Task ID: 1
+Agent: Main
+Task: BRIEF FINAL — All 9 updates for EA Trading Pro
+
+Work Log:
+- Rebranded "Trading Pro" → "EA Trading Pro" across 6 files (login, register, reset-password, dashboard, admin, payments API)
+- Updated license verify API: removed $250 threshold from comments and response, balance_low now explicitly admin-only
+- Updated register legal text: added Terms + Privacy links, removed $250 mention
+- Rewrote /legal/terms: 9 sections, no $250 mention, added broker relationship section
+- Rewrote /legal/privacy: 6 sections with more detail, added cookies section
+- Rewrote /pricing: new title "Sin costo fijo. Solo gana cuando usted gana.", deposit info box
+- Rewrote /faq: 10 comprehensive Q&As matching brief exactly
+- Rewrote LandingPage.tsx: Hero (new title/subtitle/metrics/CTA), HowItWorks (3 new steps), Technology (8 items), Rules (7 rules)
+- Added "Precios" nav link to landing navbar
+- Verified no $250 or "Trading Pro" (without EA) remains in source
+- Build successful (24 pages), git pushed, Vercel deployed to production
+
+Stage Summary:
+- Production URL: https://trading-pro-plum.vercel.app
+- All 9 brief items completed
+- Zero $250 references in public-facing code
+- balance_low only triggered by admin/webhook, never automatic
