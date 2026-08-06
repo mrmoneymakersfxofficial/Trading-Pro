@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Bot, Mail, ArrowRight } from "lucide-react";
+import { Mail, ArrowRight } from "lucide-react";
+import PremiumHeader from "@/components/shared/PremiumHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,21 +38,8 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-6">
-      <div className="w-full max-w-md">
-        <Link
-          href="/auth/login"
-          className="inline-block mb-6 text-sm text-zinc-400 hover:text-white transition-colors"
-        >
-          ← Volver al inicio de sesión
-        </Link>
-
-        {/* Logo */}
-        <div className="flex items-center justify-center gap-2.5 mb-10">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-            <Bot className="w-6 h-6 text-emerald-400" />
-          </div>
-          <span className="text-2xl font-bold text-white">EA Trading Pro</span>
-        </div>
+      <PremiumHeader variant="auth" />
+      <div className="w-full max-w-md pt-16">
 
         <div className="p-8 rounded-2xl border border-zinc-800 bg-zinc-900/50">
           <h1 className="text-2xl font-bold text-white mb-2">

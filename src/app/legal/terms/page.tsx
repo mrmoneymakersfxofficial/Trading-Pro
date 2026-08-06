@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Bot } from "lucide-react";
+import PremiumHeader from "@/components/shared/PremiumHeader";
 
 const sections = [
   {
@@ -52,7 +53,8 @@ const sections = [
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-      <div className="max-w-3xl mx-auto px-6 py-16">
+      <PremiumHeader variant="landing" />
+      <div className="max-w-3xl mx-auto px-6 py-16 pt-24">
         <Link
           href="/"
           className="inline-block mb-8 text-sm text-zinc-400 hover:text-white transition-colors"

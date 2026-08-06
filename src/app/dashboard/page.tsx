@@ -4,18 +4,15 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
-  Bot,
   Key,
   Link2,
   Shield,
-  LogOut,
   CheckCircle2,
   XCircle,
   Clock,
-  Pause,
-  AlertTriangle,
   Loader2,
 } from "lucide-react";
+import PremiumHeader from "@/components/shared/PremiumHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -135,33 +132,14 @@ export default function UserDashboard() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
-      {/* Navbar */}
-      <nav className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-emerald-400" />
-            </div>
-            <span className="text-lg font-bold">EA Trading Pro</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-zinc-400 hidden sm:block">
-              {session?.user?.email}
-            </span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-zinc-400 hover:text-white"
-              onClick={() => signOut({ callbackUrl: "/" })}
-            >
-              <LogOut className="w-4 h-4 mr-1.5" />
-              Salir
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <PremiumHeader
+        variant="app"
+        userName={session?.user?.email}
+        userRole={session?.user?.role}
+        onSignOut={() => signOut({ callbackUrl: "/" })}
+      />
 
-      <main className="flex-1 max-w-4xl mx-auto w-full px-6 py-10 space-y-8">
+      <main className="flex-1 max-w-4xl mx-auto w-full px-6 pt-24 pb-10 space-y-8">
         {/* Welcome */}
         <div>
           <h1 className="text-3xl font-bold">

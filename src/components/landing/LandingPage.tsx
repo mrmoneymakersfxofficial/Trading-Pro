@@ -3,22 +3,36 @@
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Link2,
-  TrendingUp,
-  ShieldAlert,
+  ShieldCheck,
   ZapOff,
   Globe2,
   Crosshair,
   AlertTriangle,
   CheckCircle2,
-  Sun,
-  Moon,
   Bot,
   DollarSign,
+  Link2,
+  TrendingUp,
+  Activity,
+  BarChart3,
+  Target,
+  Layers,
+  ScanSearch,
+  Timer,
+  Scale,
+  ShieldAlert,
+  Banknote,
+  Percent,
+  Wallet,
+  LockOpen,
+  Flame,
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
-import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
+import PremiumHeader from "@/components/shared/PremiumHeader";
+import GlowParticleTrail from "@/components/effects/GlowParticleTrail";
+import BackgroundParticles from "@/components/effects/BackgroundParticles";
 
 // ─── Animation variants ──────────────────────────────────────
 const fadeUp = {
@@ -35,29 +49,14 @@ const stagger = {
   visible: { transition: { staggerChildren: 0.1 } },
 };
 
-// ─── Theme Toggle ────────────────────────────────────────────
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  return (
-    <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="p-2 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-      aria-label="Toggle theme"
-    >
-      <Sun className="w-4 h-4 hidden dark:block" />
-      <Moon className="w-4 h-4 block dark:hidden" />
-    </button>
-  );
-}
-
 // ─── HERO ────────────────────────────────────────────────────
 function Hero() {
   return (
-    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden pt-16">
       {/* Background grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:64px_64px]" />
       {/* Radial glow */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] rounded-full bg-emerald-500/[0.04] blur-[140px]" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] rounded-full bg-emerald-500/[0.06] blur-[160px]" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6 text-center">
         <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
@@ -97,9 +96,9 @@ function Hero() {
           <Link href="/auth/register">
             <Button
               size="lg"
-              className="h-14 px-8 text-base font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_32px_rgba(16,185,129,0.25)] hover:shadow-[0_0_48px_rgba(16,185,129,0.35)] transition-all duration-300"
+              className="h-14 px-8 text-base font-semibold rounded-full bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_32px_rgba(16,185,129,0.3)] hover:shadow-[0_0_48px_rgba(16,185,129,0.45)] transition-all duration-300 hover:scale-[1.02]"
             >
-              Solicitar Licencia — Desde $650 USD
+              Solicitar Licencia — $650 USD
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </Link>
@@ -113,42 +112,45 @@ function Hero() {
 
         {/* Metrics bar */}
         <motion.div
-          className="mt-12 flex items-center justify-center gap-8 sm:gap-12"
+          className="mt-14 flex items-center justify-center gap-8 sm:gap-14"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.55 }}
         >
           {[
-            { label: "Rendimiento", value: "+12.4%" },
-            { label: "Win Rate", value: "68.2%" },
-            { label: "Operaciones", value: "580+" },
+            { label: "Rendimiento", value: "+12.4%", icon: TrendingUp },
+            { label: "Win Rate", value: "68.2%", icon: Target },
+            { label: "Operaciones", value: "580+", icon: Activity },
           ].map((m) => (
-            <div key={m.label} className="text-center">
+            <div key={m.label} className="text-center group">
+              <m.icon className="w-5 h-5 text-emerald-500/40 mx-auto mb-2 group-hover:text-emerald-400 transition-colors" />
               <p className="text-2xl sm:text-3xl font-bold text-emerald-400">{m.value}</p>
-              <p className="text-xs text-zinc-500 uppercase tracking-wider mt-1">{m.label}</p>
+              <p className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wider mt-1">{m.label}</p>
             </div>
           ))}
         </motion.div>
 
-        {/* Abstract dashboard mockup */}
+        {/* Dashboard mockup */}
         <motion.div
           className="mt-16 relative mx-auto max-w-3xl"
           initial={{ opacity: 0, y: 30, scale: 0.97 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 1, delay: 0.6 }}
         >
-          <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/40 backdrop-blur-sm p-6 shadow-2xl shadow-black/40">
+          <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/40 backdrop-blur-sm p-6 shadow-2xl shadow-black/40 relative overflow-hidden">
+            {/* Inner glow */}
+            <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/[0.03] to-transparent pointer-events-none" />
             {/* Top bar */}
-            <div className="flex items-center gap-2 mb-5">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
+            <div className="flex items-center gap-2 mb-5 relative">
+              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
               <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
               <span className="ml-3 text-xs text-zinc-500 font-mono">EA Trading Pro — Live</span>
             </div>
-            {/* Chart lines */}
+            {/* Chart */}
             <div className="grid grid-cols-4 gap-4">
               <div className="col-span-3 space-y-3">
-                <div className="h-2 w-24 bg-emerald-500/20 rounded" />
+                <div className="h-2 w-28 bg-emerald-500/20 rounded" />
                 <svg className="w-full h-28 text-emerald-500/30" viewBox="0 0 400 100" fill="none">
                   <path d="M0 80 Q50 70 80 50 T160 35 T240 45 T320 20 T400 30" stroke="currentColor" strokeWidth="2" />
                   <path d="M0 80 Q50 70 80 50 T160 35 T240 45 T320 20 T400 30" stroke="url(#glow)" strokeWidth="1" filter="blur(2px)" />
@@ -167,16 +169,16 @@ function Hero() {
                   { label: "Drawdown", value: "-2.1%" },
                   { label: "Ops/mes", value: "580+" },
                 ].map((s) => (
-                  <div key={s.label} className="bg-zinc-800/40 rounded-lg px-3 py-2">
+                  <div key={s.label} className="bg-black/40 backdrop-blur-sm rounded-lg px-3 py-2 border border-zinc-800/40">
                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider">{s.label}</p>
-                    <p className={`text-sm font-semibold ${s.green ? "text-emerald-400" : "text-zinc-200"}`}>{s.value}</p>
+                    <p className={`text-sm font-semibold font-mono ${s.green ? "text-emerald-400" : "text-zinc-200"}`}>{s.value}</p>
                   </div>
                 ))}
               </div>
             </div>
           </div>
           {/* Glow behind card */}
-          <div className="absolute -inset-4 bg-emerald-500/[0.03] blur-3xl rounded-3xl -z-10" />
+          <div className="absolute -inset-4 bg-emerald-500/[0.04] blur-3xl rounded-3xl -z-10" />
         </motion.div>
       </div>
     </section>
@@ -187,19 +189,22 @@ function Hero() {
 function HowItWorks() {
   const steps = [
     {
-      icon: DollarSign,
-      title: "Abra su cuenta en nuestro broker recomendado",
-      desc: "Spreads bajos, ejecución rápida y compatibilidad total con nuestro algoritmo. Depósito mínimo: $650 USD. Capital 100% suyo en su cuenta de broker.",
+      icon: Banknote,
+      title: "Abra su cuenta en el broker recomendado",
+      desc: "Spreads bajos, ejecución rápida y compatibilidad total. Depósito mínimo: $650 USD. Capital 100% suyo.",
+      accent: "from-emerald-500/20 to-emerald-500/5",
     },
     {
       icon: Link2,
       title: "Conecte su MetaTrader 5",
-      desc: "Instrucciones paso a paso. Toma 10 minutos. Vinculamos la licencia a su VPS y cuenta MT5 de forma segura.",
+      desc: "Instrucciones paso a paso. Toma 10 minutos. Vinculación segura a su VPS y cuenta MT5.",
+      accent: "from-cyan-500/20 to-cyan-500/5",
     },
     {
       icon: TrendingUp,
       title: "El algoritmo opera profesionalmente",
-      desc: "Usted gana el 80%, nosotros el 20%. Sin costo fijo. Si no gana, no cobramos. Todo funciona 100% automático 24/5.",
+      desc: "Usted gana el 80%, nosotros el 20%. Sin costo fijo. Si no gana, no cobramos. 100% automático 24/5.",
+      accent: "from-green-500/20 to-green-500/5",
     },
   ];
 
@@ -223,7 +228,7 @@ function HowItWorks() {
         </motion.div>
 
         <motion.div
-          className="grid md:grid-cols-3 gap-8"
+          className="grid md:grid-cols-3 gap-6"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-40px" }}
@@ -231,83 +236,20 @@ function HowItWorks() {
         >
           {steps.map((step, i) => (
             <motion.div key={step.title} variants={fadeUp} custom={i}>
-              <div className="relative p-8 rounded-2xl border border-zinc-800/60 bg-zinc-900/30 h-full">
+              <div className="relative p-8 rounded-2xl border border-zinc-800/60 bg-zinc-900/30 h-full group hover:border-emerald-500/30 hover:bg-zinc-900/50 transition-all duration-300">
+                {/* Gradient overlay */}
+                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-b ${step.accent} opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`} />
                 {/* Step number */}
-                <span className="absolute top-6 right-6 text-5xl font-bold text-zinc-800/50 select-none">
+                <span className="absolute top-6 right-6 text-5xl font-bold text-zinc-800/40 select-none group-hover:text-emerald-500/10 transition-colors">
                   {i + 1}
                 </span>
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5">
-                  <step.icon className="w-6 h-6 text-emerald-400" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-3">{step.title}</h3>
-                <p className="text-sm text-zinc-400 leading-relaxed">{step.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-// ─── VENTAJA COMPETITIVA ────────────────────────────────────
-function RiskManagement() {
-  const cards = [
-    {
-      icon: Crosshair,
-      title: "Riesgo Milimétrico",
-      desc: "Riesgo estricto del 1% por operación. Cada trade está calculado para proteger su capital.",
-    },
-    {
-      icon: ZapOff,
-      title: "Circuit Breaker Diario",
-      desc: "Si la cuenta detecta -3% de retroceso en un día, el bot se apaga hasta el día siguiente. Cero venganzas contra el mercado.",
-    },
-    {
-      icon: Globe2,
-      title: "Filtro Macroeconómico",
-      desc: "Reducción automática de exposición al 50% durante NFP, CPI y FOMC. El algoritmo se adapta a condiciones de noticias.",
-    },
-    {
-      icon: ShieldAlert,
-      title: "Estrategia Pura",
-      desc: "Toma de liquidez en M15. Cero martingala, cero promedios, cero grid. Ratios 1:1 y 1:2 con confirmación escalonada.",
-    },
-  ];
-
-  return (
-    <section className="py-24 px-6 bg-zinc-950/50">
-      <div className="max-w-5xl mx-auto">
-        <motion.div
-          className="text-center mb-16"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={fadeUp}
-          custom={0}
-        >
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Protección de Capital por Diseño
-          </h2>
-        </motion.div>
-
-        <motion.div
-          className="grid sm:grid-cols-2 gap-6"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          variants={stagger}
-        >
-          {cards.map((card, i) => (
-            <motion.div key={card.title} variants={fadeUp} custom={i}>
-              <div className="p-7 rounded-2xl border border-zinc-800/60 bg-zinc-900/30 h-full">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                    <card.icon className="w-5 h-5 text-emerald-400" />
+                <div className="relative">
+                  <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/40 transition-all duration-300">
+                    <step.icon className="w-6 h-6 text-emerald-400" />
                   </div>
-                  <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                  <h3 className="text-xl font-semibold text-white mb-3">{step.title}</h3>
+                  <p className="text-sm text-zinc-400 leading-relaxed">{step.desc}</p>
                 </div>
-                <p className="text-sm text-zinc-400 leading-relaxed">{card.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -320,14 +262,14 @@ function RiskManagement() {
 // ─── TECNOLOGÍA DEL ALGORITMO ──────────────────────────────
 function Technology() {
   const items = [
-    "EUR/USD · GBP/USD · USD/JPY en M15",
-    "Trend following + patrones de liquidez institucional",
-    "Algoritmo propietario multi-filtro con confirmación escalonada",
-    "Trailing stop dinámico",
-    "Escala parcial de ganancias",
-    "Filtro macroeconómico automático",
-    "Circuit breaker diario de protección",
-    "Riesgo controlado: 1% por operación",
+    { icon: BarChart3, text: "EUR/USD · GBP/USD · USD/JPY en M15" },
+    { icon: TrendingUp, text: "Trend following + patrones de liquidez institucional" },
+    { icon: ScanSearch, text: "Algoritmo propietario multi-filtro con confirmación escalonada" },
+    { icon: Timer, text: "Trailing stop dinámico" },
+    { icon: Layers, text: "Escala parcial de ganancias" },
+    { icon: Globe2, text: "Filtro macroeconómico automático" },
+    { icon: ShieldAlert, text: "Circuit breaker diario de protección (-3%)" },
+    { icon: Crosshair, text: "Riesgo controlado: 1% por operación" },
   ];
 
   return (
@@ -345,12 +287,12 @@ function Technology() {
             Tecnología del Algoritmo
           </h2>
           <p className="text-zinc-400 mt-3 max-w-xl mx-auto text-sm">
-            Algoritmo propietario desarrollado con gestión de riesgo institucional.
+            Algoritmo propietario con gestión de riesgo institucional.
           </p>
         </motion.div>
 
         <motion.div
-          className="grid sm:grid-cols-2 gap-6"
+          className="grid sm:grid-cols-2 gap-4"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-40px" }}
@@ -358,11 +300,78 @@ function Technology() {
         >
           {items.map((item, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}>
-              <div className="flex items-start gap-4 p-6 rounded-2xl border border-zinc-800/60 bg-zinc-900/30 h-full">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <div className="flex items-center gap-4 p-5 rounded-xl border border-zinc-800/50 bg-zinc-900/20 group hover:border-emerald-500/30 hover:bg-zinc-900/40 transition-all duration-300">
+                <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/40 transition-all duration-300">
+                  <item.icon className="w-4.5 h-4.5 text-emerald-400" />
                 </div>
-                <p className="text-sm text-zinc-300 leading-relaxed">{item}</p>
+                <p className="text-sm text-zinc-300 leading-relaxed group-hover:text-zinc-200 transition-colors">{item.text}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ─── PROTECCIÓN DE CAPITAL ────────────────────────────────
+function RiskManagement() {
+  const cards = [
+    {
+      icon: Crosshair,
+      title: "Riesgo Milimétrico",
+      desc: "1% por operación. Cada trade está calculado para proteger su capital.",
+    },
+    {
+      icon: ZapOff,
+      title: "Circuit Breaker Diario",
+      desc: "-3% en un día → bot se apaga hasta mañana. Cero venganzas contra el mercado.",
+    },
+    {
+      icon: Globe2,
+      title: "Filtro Macroeconómico",
+      desc: "Exposición al 50% durante NFP, CPI y FOMC. Se adapta a noticias.",
+    },
+    {
+      icon: ShieldCheck,
+      title: "Estrategia Pura",
+      desc: "Cero martingala, cero grid, cero hedging agresivo. Ratios 1:1 y 1:2.",
+    },
+  ];
+
+  return (
+    <section className="py-24 px-6">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          className="text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={fadeUp}
+          custom={0}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
+            Protección de Capital por Diseño
+          </h2>
+        </motion.div>
+
+        <motion.div
+          className="grid sm:grid-cols-2 gap-4"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={stagger}
+        >
+          {cards.map((card, i) => (
+            <motion.div key={card.title} variants={fadeUp} custom={i}>
+              <div className="p-6 rounded-xl border border-zinc-800/50 bg-zinc-900/20 h-full group hover:border-emerald-500/30 hover:bg-zinc-900/40 transition-all duration-300">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/40 transition-all duration-300">
+                    <card.icon className="w-5 h-5 text-emerald-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-white">{card.title}</h3>
+                </div>
+                <p className="text-sm text-zinc-400 leading-relaxed pl-[52px] group-hover:text-zinc-300 transition-colors">{card.desc}</p>
               </div>
             </motion.div>
           ))}
@@ -375,17 +384,17 @@ function Technology() {
 // ─── REGLAS DEL SISTEMA ─────────────────────────────────────
 function Rules() {
   const rules = [
-    "Depósito inicial mínimo: $650 USD (capital 100% suyo)",
-    "20% solo sobre ganancias mensuales",
-    "Sin ganancias = sin costo",
-    "Retire sus ganancias cuando desee",
-    "Las pérdidas por trading NUNCA bloquean su acceso",
-    "Sin martingale · Sin grid · Sin hedging agresivo",
-    "Opera en sesiones London + New York (alta liquidez)",
+    { icon: Banknote, text: "Depósito inicial mínimo: $650 USD (capital 100% suyo)" },
+    { icon: Percent, text: "20% solo sobre ganancias mensuales" },
+    { icon: Scale, text: "Sin ganancias = sin costo" },
+    { icon: Wallet, text: "Retire sus ganancias cuando desee" },
+    { icon: LockOpen, text: "Las pérdidas por trading NUNCA bloquean su acceso" },
+    { icon: Flame, text: "Sin martingale · Sin grid · Sin hedging agresivo" },
+    { icon: Clock, text: "Opera en sesiones London + New York (alta liquidez)" },
   ];
 
   return (
-    <section className="py-24 px-6">
+    <section className="py-24 px-6 bg-zinc-950/50">
       <div className="max-w-3xl mx-auto">
         <motion.div
           className="text-center mb-14"
@@ -401,7 +410,7 @@ function Rules() {
         </motion.div>
 
         <motion.div
-          className="space-y-5"
+          className="space-y-3"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-40px" }}
@@ -409,11 +418,11 @@ function Rules() {
         >
           {rules.map((rule, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}>
-              <div className="flex items-start gap-4 p-6 rounded-xl border border-zinc-800/50 bg-zinc-900/20">
-                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <div className="flex items-center gap-4 p-5 rounded-xl border border-zinc-800/50 bg-zinc-900/20 group hover:border-emerald-500/30 hover:bg-zinc-900/40 transition-all duration-300">
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/40 transition-all duration-300">
+                  <rule.icon className="w-4 h-4 text-emerald-400" />
                 </div>
-                <p className="text-sm text-zinc-300 leading-relaxed">{rule}</p>
+                <p className="text-sm text-zinc-300 leading-relaxed group-hover:text-zinc-200 transition-colors">{rule.text}</p>
               </div>
             </motion.div>
           ))}
@@ -426,7 +435,7 @@ function Rules() {
 // ─── FOOTER / CTA FINAL ────────────────────────────────────
 function FinalCTA() {
   return (
-    <section className="py-24 px-6 bg-zinc-950/50">
+    <section className="py-24 px-6">
       <div className="max-w-3xl mx-auto text-center">
         <motion.div
           initial="hidden"
@@ -439,13 +448,13 @@ function FinalCTA() {
             ¿Listo para automatizar su trading?
           </h2>
           <p className="text-zinc-400 mb-8 max-w-lg mx-auto text-sm">
-            Sin costo fijo. Sin riesgo oculto. Solo 20% de las ganancias que el algoritmo genere para usted.
+            Sin costo fijo. Sin riesgo oculto. Solo 20% de las ganancias que el algoritmo genere.
           </p>
 
           <Link href="/auth/register">
             <Button
               size="lg"
-              className="h-14 px-10 text-base font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_32px_rgba(16,185,129,0.25)] hover:shadow-[0_0_48px_rgba(16,185,129,0.35)] transition-all duration-300"
+              className="h-14 px-10 text-base font-semibold rounded-full bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_32px_rgba(16,185,129,0.3)] hover:shadow-[0_0_48px_rgba(16,185,129,0.45)] transition-all duration-300 hover:scale-[1.02]"
             >
               Activar mi Licencia Hoy
               <ArrowRight className="w-5 h-5 ml-2" />
@@ -498,53 +507,18 @@ function Footer() {
 export default function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col bg-zinc-950 text-white">
-      {/* Navbar */}
-      <nav className="sticky top-0 z-50 border-b border-zinc-800/40 bg-zinc-950/80 backdrop-blur-xl">
-        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-emerald-400" />
-            </div>
-            <span className="text-lg font-bold text-white tracking-tight">EA Trading Pro</span>
-          </Link>
+      {/* Premium Effects — Landing only */}
+      <GlowParticleTrail />
+      <BackgroundParticles />
 
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link
-              href="#como-funciona"
-              className="hidden sm:block text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              Cómo Funciona
-            </Link>
-            <Link
-              href="/pricing"
-              className="hidden sm:block text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              Precios
-            </Link>
-            <Link
-              href="/auth/login"
-              className="text-sm text-zinc-400 hover:text-white transition-colors"
-            >
-              Iniciar Sesión
-            </Link>
-            <Link href="/auth/register">
-              <Button
-                size="sm"
-                className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold rounded-lg transition-all duration-200"
-              >
-                Solicitar Licencia
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </nav>
+      {/* Global Premium Header */}
+      <PremiumHeader variant="landing" />
 
-      <main className="flex-1">
+      <main className="flex-1 relative z-10">
         <Hero />
         <HowItWorks />
-        <RiskManagement />
         <Technology />
+        <RiskManagement />
         <Rules />
         <FinalCTA />
       </main>

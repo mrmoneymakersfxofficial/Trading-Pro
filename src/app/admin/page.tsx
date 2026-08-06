@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
-  Bot,
   Users,
   Key,
   Plus,
@@ -12,10 +11,10 @@ import {
   Pause,
   Play,
   Loader2,
-  LogOut,
   RefreshCw,
   Search,
 } from "lucide-react";
+import PremiumHeader from "@/components/shared/PremiumHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -166,42 +165,14 @@ export default function AdminPanel() {
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white flex flex-col">
-      {/* Navbar */}
-      <nav className="border-b border-zinc-800 bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-emerald-400" />
-            </div>
-            <span className="text-lg font-bold">EA Trading Pro</span>
-            <Badge variant="outline" className="ml-2 text-emerald-400 border-emerald-500/30">
-              ADMIN
-            </Badge>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-zinc-400 hover:text-white"
-              onClick={loadData}
-            >
-              <RefreshCw className="w-4 h-4 mr-1.5" />
-              Refresh
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-zinc-400 hover:text-white"
-              onClick={() => signOut({ callbackUrl: "/" })}
-            >
-              <LogOut className="w-4 h-4 mr-1.5" />
-              Salir
-            </Button>
-          </div>
-        </div>
-      </nav>
+      <PremiumHeader
+        variant="app"
+        userName={session?.user?.email}
+        userRole="admin"
+        onSignOut={() => signOut({ callbackUrl: "/" })}
+      />
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-10 space-y-10">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 pt-24 pb-10 space-y-10">
         <div>
           <h1 className="text-3xl font-bold">Panel de Administración</h1>
           <p className="text-zinc-400 mt-1">
