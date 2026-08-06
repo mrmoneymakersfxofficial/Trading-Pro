@@ -54,6 +54,15 @@ export const authOptions: NextAuthOptions = {
             `INSERT INTO users (id, email, name, image, role, "createdAt", "updatedAt") VALUES ($1, $2, $3, $4, $5, now(), now())`,
             [id, user.email, user.name ?? null, user.image ?? null, role]
           );
+          // Auto-create a trading account for new users
+          try {
+            await query(
+              `INSERT INTO trading_accounts (id, user_id, broker_name, account_type, leverage, base_currency, balance, equity, status, created_at, updated_at) VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, 0, 0, $6, now(), now())`,
+              [id, 'ICMarkets', 'standard', '1:500', 'USD', shouldBeAdmin ? 'active' : 'pending']
+            );
+          } catch {
+            // Table might not exist yet — silently skip
+          }
         } else if (shouldBeAdmin && existing.role !== "admin") {
           // Ensure admin emails always have admin role
           await query(`UPDATE users SET role = 'admin', "updatedAt" = now() WHERE email = $1`, [user.email]);

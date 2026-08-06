@@ -43,6 +43,16 @@ export async function POST(req: NextRequest) {
       [id, email, name, hashedPassword, role]
     );
 
+    // Auto-create a trading account for new users
+    try {
+      await query(
+        `INSERT INTO trading_accounts (id, user_id, broker_name, account_type, leverage, base_currency, balance, equity, status, created_at, updated_at) VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, 0, 0, $6, now(), now())`,
+        [id, 'ICMarkets', 'standard', '1:500', 'USD', role === 'admin' ? 'active' : 'pending']
+      );
+    } catch {
+      // Table might not exist yet — silently skip
+    }
+
     await auditLog({ userId: id, action: "register", details: { email, role }, ipAddress: ip });
 
     return NextResponse.json({ message: "Cuenta creada exitosamente.", id }, { status: 201 });
