@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getCurrentUser, requireAuth, requireAdmin } from "@/lib/auth-guard";
+import { getCurrentUser, requireAuth, requireAdmin, isAdminUser } from "@/lib/auth-guard";
 import { auditLog } from "@/lib/audit";
 
 async function checkAdmin() {
   const user = await getCurrentUser();
-  if (!user || user.role !== "admin") return null;
+  if (!user || !isAdminUser(user)) return null;
   return user;
 }
 

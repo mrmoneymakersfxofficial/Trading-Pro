@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getCurrentUser } from "@/lib/auth-guard";
+import { getCurrentUser, isAdminUser } from "@/lib/auth-guard";
 
 export async function GET() {
   try {
     const user = await getCurrentUser();
-    const adminEmails = (process.env.ADMIN_EMAILS ?? "").split(",").map((e) => e.trim());
-    if (!user || (user.role !== "admin" && !adminEmails.includes(user.email))) {
+    if (!user || !isAdminUser(user)) {
       return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
     }
 

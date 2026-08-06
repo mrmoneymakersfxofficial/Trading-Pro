@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getCurrentUser, requireAuth, requireAdmin } from "@/lib/auth-guard";
+import { getCurrentUser, requireAuth, requireAdmin, isAdminUser } from "@/lib/auth-guard";
 import { auditLog } from "@/lib/audit";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const user = await getCurrentUser();
-  if (!user || user.role !== "admin") return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
+  if (!user || !isAdminUser(user)) return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
 
   const { id } = await params;
   const license = await queryOne("SELECT * FROM licenses WHERE id = $1", [id]);

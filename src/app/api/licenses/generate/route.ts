@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { query, queryOne } from "@/lib/db-pg";
-import { getCurrentUser, requireAuth, requireAdmin } from "@/lib/auth-guard";
+import { getCurrentUser, requireAuth, requireAdmin, isAdminUser } from "@/lib/auth-guard";
 import { generateLicenseSchema } from "@/lib/validations";
 import { generateLicenseKey } from "@/lib/licenses";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const user = await getCurrentUser();
-    if (!user || user.role !== "admin") {
+    if (!user || !isAdminUser(user)) {
       return NextResponse.json({ error: "Acceso denegado" }, { status: 403 });
     }
 
