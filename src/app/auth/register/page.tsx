@@ -57,7 +57,14 @@ export default function RegisterPage() {
     });
 
     if (loginRes?.ok) {
-      router.push("/dashboard");
+      // Check role for smart redirect
+      const sessionRes = await fetch("/api/auth/session");
+      const session = await sessionRes.json();
+      if (session?.user?.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
     } else {
       router.push("/auth/login");
     }
@@ -65,7 +72,7 @@ export default function RegisterPage() {
   }
 
   async function handleGoogle() {
-    await signIn("google", { callbackUrl: "/dashboard" });
+    await signIn("google", { callbackUrl: "/auth/redirect" });
   }
 
   return (
