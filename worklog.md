@@ -80,3 +80,35 @@ Stage Summary:
 - All 9 brief items completed
 - Zero $250 references in public-facing code
 - balance_low only triggered by admin/webhook, never automatic
+---
+Task ID: 2
+Agent: Main
+Task: ULTRA PREMIUM UX/IX — Global header, particle effects, better icons
+
+Work Log:
+- Created GlowParticleTrail.tsx: canvas-based mouse-follow emerald particles with glow (landing only)
+- Created BackgroundParticles.tsx: ambient floating dots with connecting lines (landing only)
+- Created PremiumHeader.tsx: ultra premium header with 3 variants (landing/app/auth)
+  - Glassmorphism blur, emerald glow top line, scroll-aware bg
+  - Mobile hamburger with animated slide-in panel, body scroll lock
+  - Badge "Algoritmo Propietario" on landing, ADMIN badge on admin
+  - Animated nav indicator, theme toggle, touch-friendly targets
+- Revamped LandingPage.tsx:
+  - 20+ specific Lucide icons (BarChart3, ScanSearch, Banknote, Scale, Percent, Wallet, etc.)
+  - Premium hover effects on all cards (border glow, bg shift, icon highlight)
+  - Rounded-full CTA buttons with shadow glow and scale hover
+  - No more boring blocks — every item has unique icon
+  - Glassmorphism dashboard mockup with backdrop-blur stat panels
+  - Hero metrics with icons
+- Updated all pages to use PremiumHeader:
+  - landing variant: terms, privacy, pricing, faq
+  - app variant: dashboard, admin (with sign out)
+  - auth variant: login, register, reset-password
+- Fixed top padding on all pages for fixed header
+- Build successful, git pushed, Vercel deployed
+
+Stage Summary:
+- Production: https://trading-pro-plum.vercel.app
+- 3 new components: PremiumHeader, GlowParticleTrail, BackgroundParticles
+- 15 files changed, 787 insertions, 280 deletions
+- Touch-friendly mobile UX with hamburger menu
