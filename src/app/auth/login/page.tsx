@@ -53,6 +53,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-6">
       <div className="w-full max-w-md">
+        <Link href="/" className="inline-block mb-6 text-sm text-zinc-400 hover:text-white transition-colors">
+          ← Volver al inicio
+        </Link>
+
         {/* Logo */}
         <div className="flex items-center justify-center gap-2.5 mb-10">
           <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">

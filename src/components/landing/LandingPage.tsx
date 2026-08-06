@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  ShieldCheck,
   Link2,
   TrendingUp,
   ShieldAlert,
@@ -16,8 +15,6 @@ import {
   Moon,
   Bot,
   DollarSign,
-  Clock,
-  Ban,
 } from "lucide-react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
@@ -106,7 +103,7 @@ function Hero() {
               size="lg"
               className="h-14 px-8 text-base font-semibold rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black shadow-[0_0_32px_rgba(16,185,129,0.25)] hover:shadow-[0_0_48px_rgba(16,185,129,0.35)] transition-all duration-300"
             >
-              Solicitar Licencia (Mínimo $500 USD)
+              Solicitar Licencia (Mínimo $650 USD)
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </Link>
@@ -131,7 +128,7 @@ function Hero() {
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/60" />
               <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
               <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
-              <span className="ml-3 text-xs text-zinc-500 font-mono">CPA EA Trading Bot — Live</span>
+              <span className="ml-3 text-xs text-zinc-500 font-mono">EA Trading Bot — Live</span>
             </div>
             {/* Chart lines */}
             <div className="grid grid-cols-4 gap-4">
@@ -177,7 +174,7 @@ function HowItWorks() {
     {
       icon: DollarSign,
       title: "Fondea tu Cuenta",
-      desc: "Abre tu cuenta en nuestro broker asociado con $500 USD — capital óptimo para gestión de riesgo.",
+      desc: "Abre tu cuenta en nuestro broker asociado con $650 USD — capital óptimo para gestión de riesgo.",
     },
     {
       icon: Link2,
@@ -302,21 +299,69 @@ function RiskManagement() {
   );
 }
 
+// ─── TECNOLOGÍA DEL ALGORITMO ──────────────────────────────
+function Technology() {
+  const items = [
+    "Pares: EUR/USD · GBP/USD · USD/JPY",
+    "Timeframe: M15",
+    "Estrategia: Trend following + patrones de liquidez institucional",
+    "Algoritmo propietario multi-filtro con confirmación escalonada",
+    "Trailing stop dinámico",
+    "Escala parcial de ganancias",
+    "Filtro macroeconómico automático",
+    "Circuit breaker diario -3%",
+    "Riesgo: 1% por operación",
+  ];
+
+  return (
+    <section className="py-24 px-6 bg-zinc-950/50">
+      <div className="max-w-5xl mx-auto">
+        <motion.div
+          className="text-center mb-16"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+          variants={fadeUp}
+          custom={0}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold text-white">
+            Tecnología del Algoritmo
+          </h2>
+        </motion.div>
+
+        <motion.div
+          className="grid sm:grid-cols-2 gap-6"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={stagger}
+        >
+          {items.map((item, i) => (
+            <motion.div key={i} variants={fadeUp} custom={i}>
+              <div className="flex items-start gap-4 p-6 rounded-2xl border border-zinc-800/60 bg-zinc-900/30 h-full">
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                </div>
+                <p className="text-sm text-zinc-300 leading-relaxed">{item}</p>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
 // ─── REGLAS DEL SISTEMA ─────────────────────────────────────
 function Rules() {
   const rules = [
-    {
-      icon: DollarSign,
-      text: "Balance mínimo de operación: $600 USD (incluyendo margen de crecimiento).",
-    },
-    {
-      icon: Ban,
-      text: "Retiros que reduzcan el balance por debajo del mínimo pausarán el software.",
-    },
-    {
-      icon: Clock,
-      text: "El pago puntual del 20% de profit share es requisito para mantener la licencia activa.",
-    },
+    "Depósito inicial mínimo: $650 USD (capital 100% tuyo)",
+    "Profit share: 20% solo sobre ganancias mensuales",
+    "Sin ganancias = sin costo",
+    "Retirá tus ganancias cuando quieras",
+    "Si retirás capital bajo el mínimo operativo: algoritmo se pausa",
+    "Pérdidas por trading: NUNCA bloquean tu acceso",
+    "Sin martingale · Sin grid · Sin hedging agresivo",
   ];
 
   return (
@@ -345,10 +390,10 @@ function Rules() {
           {rules.map((rule, i) => (
             <motion.div key={i} variants={fadeUp} custom={i}>
               <div className="flex items-start gap-4 p-6 rounded-xl border border-zinc-800/50 bg-zinc-900/20">
-                <div className="w-9 h-9 rounded-lg bg-zinc-800/60 flex items-center justify-center shrink-0 mt-0.5">
-                  <rule.icon className="w-4 h-4 text-zinc-400" />
+                <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
                 </div>
-                <p className="text-sm text-zinc-300 leading-relaxed">{rule.text}</p>
+                <p className="text-sm text-zinc-300 leading-relaxed">{rule}</p>
               </div>
             </motion.div>
           ))}
@@ -402,10 +447,24 @@ function Footer() {
       <div className="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <Bot className="w-5 h-5 text-emerald-400" />
-          <span className="font-semibold text-white text-sm">CPA EA Trading Bot</span>
+          <span className="font-semibold text-white text-sm">EA Trading Pro</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <Link href="/legal/terms" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+            Términos
+          </Link>
+          <Link href="/legal/privacy" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+            Privacidad
+          </Link>
+          <Link href="/pricing" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+            Precios
+          </Link>
+          <Link href="/faq" className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors">
+            FAQ
+          </Link>
         </div>
         <p className="text-xs text-zinc-600">
-          &copy; {new Date().getFullYear()} CPA EA Trading Bot. Todos los derechos reservados.
+          &copy; {new Date().getFullYear()} EA Trading Pro. Todos los derechos reservados.
         </p>
       </div>
     </footer>
@@ -423,7 +482,7 @@ export default function LandingPage() {
             <div className="w-8 h-8 rounded-lg bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center">
               <Bot className="w-5 h-5 text-emerald-400" />
             </div>
-            <span className="text-lg font-bold text-white tracking-tight">CPA EA</span>
+            <span className="text-lg font-bold text-white tracking-tight">EA Trading Pro</span>
           </Link>
 
           <div className="flex items-center gap-4">
@@ -456,6 +515,7 @@ export default function LandingPage() {
         <Hero />
         <HowItWorks />
         <RiskManagement />
+        <Technology />
         <Rules />
         <FinalCTA />
       </main>

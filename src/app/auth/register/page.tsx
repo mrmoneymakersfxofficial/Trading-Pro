@@ -70,6 +70,10 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-950 px-6 py-12">
       <div className="w-full max-w-md">
+        <Link href="/" className="inline-block mb-6 text-sm text-zinc-400 hover:text-white transition-colors">
+          ← Volver al inicio
+        </Link>
+
         {/* Logo */}
         <div className="flex items-center justify-center gap-2.5 mb-10">
           <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
@@ -214,6 +218,14 @@ export default function RegisterPage() {
               {!loading && <ArrowRight className="ml-2 w-4 h-4" />}
             </Button>
           </form>
+
+          <p className="mt-5 text-xs text-zinc-500 leading-relaxed">
+            Al registrarte aceptas los{" "}
+            <Link href="/legal/terms" className="text-emerald-400 hover:underline">
+              Términos de Servicio
+            </Link>
+            . Depósito inicial mínimo: $650 USD en tu broker. EA Trading Pro retiene el 20% de ganancias mensuales. Sin costo fijo. Las pérdidas por trading nunca bloquean tu acceso. Si retirás capital bajo el mínimo operativo (~$250 USD), el algoritmo se pausa.
+          </p>
         </div>
 
         <p className="mt-6 text-center text-sm text-zinc-500">

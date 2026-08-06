@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Trading Pro — Trading Automatizado con IA",
+  title: "EA Trading Pro — Trading Algorítmico Automatizado para MT5",
   description:
     "Automatiza tus estrategias de trading en MT4/MT5 con licencias seguras, resultados verificables y control total.",
   keywords: ["trading", "automatizado", "bot", "MT4", "MT5", "licencias", "SaaS"],
